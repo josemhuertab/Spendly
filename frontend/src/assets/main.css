@@ -1,0 +1,11 @@
+@import './base.css';
+@import './auth.css';
+
+#app {
+  font-weight: normal;
+}
+
+a {
+  text-decoration: none;
+  transition: 0.4s;
+}
