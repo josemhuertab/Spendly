@@ -34,7 +34,6 @@ const isActive = (name) => computed(() => route.name === name)
     elevation="12"
   >
     <v-list density="comfortable" class="text-white">
-      <!-- Secciones principales -->
       <v-list-item
         :active="isActive('dashboard')"
         active-class="sidebar-active"
@@ -66,7 +65,6 @@ const isActive = (name) => computed(() => route.name === name)
 
       <div class="flex-grow-1" />
 
-      <!-- Parte inferior -->
       <v-divider class="my-4" />
       <v-list-item
         active-class="sidebar-active"

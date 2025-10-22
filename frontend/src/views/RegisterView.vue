@@ -90,10 +90,6 @@ async function onSubmit() {
             <v-icon class="benefit-icon">mdi-trending-up</v-icon>
             Mejora tus hábitos financieros
           </li>
-          <li>
-            <v-icon class="benefit-icon">mdi-gift-outline</v-icon>
-            Gratis para siempre, sin sorpresas
-          </li>
         </ul>
       </div>
     </template>
