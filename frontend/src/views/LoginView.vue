@@ -121,7 +121,13 @@ async function onSubmit() {
           </div>
         </v-form>
         
-        <div class="auth__link mt-6">
+        <div class="auth__link mt-4">
+          <RouterLink to="/forgot-password" class="link-primary">
+            ¿Olvidaste tu contraseña?
+          </RouterLink>
+        </div>
+        
+        <div class="auth__link mt-2">
           <RouterLink to="/register" class="link-primary">
             ¿No tienes cuenta? Regístrate aquí
           </RouterLink>
