@@ -18,7 +18,6 @@ export async function loginUser(email, password) {
     const cred = await signInWithEmailAndPassword(auth, email, password)
     return cred.user
   } catch (error) {
-    // Mapear errores de Firebase a mensajes más amigables
     const errorMessages = {
       'auth/user-not-found': 'Correo o contraseña incorrectos',
       'auth/wrong-password': 'Correo o contraseña incorrectos',
@@ -30,7 +29,6 @@ export async function loginUser(email, password) {
     
     const friendlyMessage = errorMessages[error.code] || 'Error al iniciar sesión. Verifica tus credenciales'
     
-    // Crear un nuevo error con el mensaje amigable pero mantener el código original
     const friendlyError = new Error(friendlyMessage)
     friendlyError.code = error.code
     throw friendlyError
