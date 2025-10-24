@@ -148,11 +148,16 @@ onMounted(async () => {
   transactionStore.startRealtime()
   await savingsStore.loadSavings(savingsStore.filterYear)
   await savingsStore.loadSummary()
+  await savingsStore.loadAnnualGoal()
   // Recalcular totales si cambia la moneda
   const { watch } = await import('vue')
   watch(() => currencyStore.currentCurrency, () => {
     transactionStore.loadSummary()
     savingsStore.loadSummary()
+  })
+  // Recargar meta anual si cambia el año filtrado
+  watch(() => savingsStore.filterYear, () => {
+    savingsStore.loadAnnualGoal()
   })
 })
 
