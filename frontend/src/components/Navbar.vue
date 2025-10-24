@@ -35,7 +35,6 @@ const menuItems = [
       <v-app-bar-nav-icon icon="mdi-menu" @click="emit('toggle-drawer')" />
       <v-app-bar-title class="text-center">Spendly</v-app-bar-title>
       <div class="d-flex align-center" style="gap:8px">
-        <span class="text-white text-body-2">¡Bienvenido, {{ userStore.displayName || 'usuario' }}!</span>
         <v-btn v-if="userStore.isAuthenticated" variant="tonal" class="text-none" prepend-icon="mdi-logout" @click="onLogout">Salir</v-btn>
       </div>
     </template>
