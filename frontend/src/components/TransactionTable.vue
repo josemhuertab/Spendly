@@ -42,9 +42,9 @@ const filteredTransactions = computed(() => {
 const hasTransactions = computed(() => filteredTransactions.value.length > 0)
 
 // Methods
-function formatAmount(amount, type) {
-  // Convert from USD (stored) to current currency for display
-  const convertedAmount = currencyStore.convertAmount(amount, 'USD', currencyStore.currentCurrency)
+function formatAmount(amount, type, fromCurrency) {
+  // Convert from transaction currency to current currency for display
+  const convertedAmount = currencyStore.convertAmount(Number(amount || 0), fromCurrency || currencyStore.currentCurrency, currencyStore.currentCurrency)
   const formatted = currencyStore.formatAmount(convertedAmount)
   
   return type === 'ingreso' ? `+${formatted}` : `-${formatted}`
@@ -234,7 +234,7 @@ onMounted(() => {
         <!-- Amount column -->
         <template #item.amount="{ item }">
           <span :class="getAmountClass(item.type)" class="text-sm font-bold">
-            {{ formatAmount(item.amount, item.type) }}
+            {{ formatAmount(item.amount, item.type, item.currency) }}
           </span>
         </template>
 

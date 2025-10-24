@@ -13,6 +13,8 @@ const showForm = ref(false)
 const showYearForm = ref(false)
 const editingSaving = ref(null)
 const isEditing = ref(false)
+const showGoalDialog = ref(false)
+const goalAmountInput = ref(0)
 
 
 const years = computed(() => {
@@ -60,9 +62,25 @@ function onSaved() {
 
 function onCancelled() { showForm.value = false }
 
+function openGoalDialog() {
+  showGoalDialog.value = true
+  goalAmountInput.value = Number(savingsStore.annualGoal || 0)
+}
+
+async function saveAnnualGoal() {
+  try {
+    await savingsStore.setAnnualGoalAmount(goalAmountInput.value)
+    showGoalDialog.value = false
+  } catch (e) {
+    // El snackbar de error del store se mostrará automáticamente
+  }
+}
+
 onMounted(async () => {
   await savingsStore.loadSavings(savingsStore.filterYear)
+  await savingsStore.loadAnnualGoal()
   savingsStore.startRealtime()
+  goalAmountInput.value = Number(savingsStore.annualGoal || 0)
 })
 
 onUnmounted(() => savingsStore.stopRealtime())
@@ -106,6 +124,9 @@ onUnmounted(() => savingsStore.stopRealtime())
           </v-btn>
           <v-btn color="secondary" size="large" prepend-icon="mdi-calendar-multiselect" class="bg-gradient-to-r from-emerald-600 to-emerald-700 text-white shadow-lg hover:shadow-xl" @click="showYearForm=true">
             Registrar por Año
+          </v-btn>
+          <v-btn color="teal" size="large" prepend-icon="mdi-target" class="bg-gradient-to-r from-teal-600 to-teal-700 text-white shadow-lg hover:shadow-xl" @click="openGoalDialog">
+            Meta anual
           </v-btn>
 
         </div>
@@ -166,6 +187,31 @@ onUnmounted(() => savingsStore.stopRealtime())
     </v-dialog>
     <v-dialog v-model="showYearForm" max-width="980" persistent>
       <SavingsYearForm @saved="showYearForm=false; savingsStore.loadSavings()" @cancelled="showYearForm=false" />
+    </v-dialog>
+
+    <!-- Annual Goal Dialog -->
+    <v-dialog v-model="showGoalDialog" max-width="520" persistent>
+      <v-card>
+        <v-card-title class="px-6 py-4">Configurar meta anual</v-card-title>
+        <v-card-text class="px-6 py-4">
+          <div class="mb-3 text-sm text-gray-600">Año seleccionado: {{ savingsStore.filterYear }}</div>
+          <v-text-field
+            v-model.number="goalAmountInput"
+            :label="'Meta anual (' + currencyStore.currentCurrencyInfo.code + ')'"
+            type="number"
+            min="0"
+            variant="outlined"
+            density="comfortable"
+            :prepend-inner-icon="currencyStore.currentCurrencyInfo.symbol === '$' ? 'mdi-cash' : 'mdi-currency-usd'"
+          />
+          <div class="text-xs text-gray-500 mt-2">Esta meta se guarda en tu cuenta y se usa para el progreso en el Dashboard.</div>
+        </v-card-text>
+        <v-card-actions class="px-6 pb-4">
+          <v-spacer />
+          <v-btn variant="text" @click="showGoalDialog=false">Cancelar</v-btn>
+          <v-btn color="primary" :loading="savingsStore.loading" @click="saveAnnualGoal">Guardar</v-btn>
+        </v-card-actions>
+      </v-card>
     </v-dialog>
 
     <!-- Loading Overlay -->

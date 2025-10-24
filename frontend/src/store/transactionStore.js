@@ -114,7 +114,22 @@ export const useTransactionStore = defineStore('transactions', {
       if (!userStore.userId) return
       
       try {
-        this.summary = await getTransactionsSummary(userStore.userId)
+        // Calcular resumen en el cliente usando la moneda seleccionada
+        const { useCurrencyStore } = await import('./currencyStore')
+        const currencyStore = useCurrencyStore()
+        const totals = {
+          totalIngresos: 0,
+          totalGastos: 0,
+          balance: 0,
+          totalTransacciones: this.transactions.length,
+        }
+        this.transactions.forEach((t) => {
+          const amount = currencyStore.convertAmount(Number(t.amount || 0), t.currency || currencyStore.currentCurrency, currencyStore.currentCurrency)
+          if (t.type === 'ingreso') totals.totalIngresos += amount
+          else if (t.type === 'gasto') totals.totalGastos += amount
+        })
+        totals.balance = totals.totalIngresos - totals.totalGastos
+        this.summary = totals
       } catch (error) {
         console.error('Error loading summary:', error)
       }
@@ -246,6 +261,32 @@ export const useTransactionStore = defineStore('transactions', {
         category: null,
         dateFrom: null,
         dateTo: null
+      }
+    },
+
+    async applyCurrencyToLegacyTransactions(newCurrency) {
+      const userStore = useUserStore()
+      if (!userStore.userId) throw new Error('Usuario no autenticado')
+      const legacy = this.transactions.filter(t => !t.currency)
+      if (legacy.length === 0) return 0
+      this.loading = true
+      this.error = null
+      try {
+        for (const t of legacy) {
+          await updateTransaction(t.id, { currency: newCurrency }, userStore.userId)
+          // Actualizar en memoria si no hay suscripción
+          if (!this._unsubscribe) {
+            const idx = this.transactions.findIndex(x => x.id === t.id)
+            if (idx !== -1) this.transactions[idx] = { ...this.transactions[idx], currency: newCurrency }
+          }
+        }
+        await this.loadSummary()
+        return legacy.length
+      } catch (e) {
+        this.error = e.message
+        throw e
+      } finally {
+        this.loading = false
       }
     },
     

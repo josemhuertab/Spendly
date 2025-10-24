@@ -2,6 +2,8 @@ import {
   collection,
   addDoc,
   getDocs,
+  getDoc,
+  setDoc,
   doc,
   updateDoc,
   deleteDoc,
@@ -168,5 +170,26 @@ export async function upsertMonthlySavings(userId, year, monthsArray) {
     }
   }
   await Promise.all(ops)
+  return true
+}
+
+// Meta anual de ahorro
+export async function getAnnualGoal(userId, year) {
+  const goalRef = doc(db, 'users', userId, 'savingsGoals', String(year))
+  const snap = await getDoc(goalRef)
+  if (!snap.exists()) return 0
+  const data = snap.data()
+  return Number(data.amount || 0)
+}
+
+export async function setAnnualGoal(userId, year, amount) {
+  const goalRef = doc(db, 'users', userId, 'savingsGoals', String(year))
+  await setDoc(goalRef, {
+    userId,
+    year: Number(year),
+    amount: Number(amount),
+    createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp()
+  }, { merge: true })
   return true
 }

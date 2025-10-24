@@ -157,7 +157,8 @@ async function onSubmit() {
   try {
     const transactionData = {
       ...formData.value,
-      amount: Number(formData.value.amount)
+      amount: Number(formData.value.amount),
+      currency: currencyStore.currentCurrency
     }
     
     if (props.isEdit && props.transaction) {
@@ -268,12 +269,6 @@ onMounted(() => {
           </template>
         </v-text-field>
         
-        <!-- Amount Preview (if different currency) -->
-        <div v-if="formData.amount && currencyStore.currentCurrency !== 'USD'" class="mb-4 -mt-2">
-          <p class="text-xs text-gray-500 px-3">
-            Equivalente: {{ currencyStore.formatAmountWithConversion(formData.amount, 'USD') }}
-          </p>
-        </div>
 
         <!-- Category -->
         <v-select

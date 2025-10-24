@@ -7,7 +7,9 @@ import {
   deleteSaving,
   subscribeSavings,
   getSavingsSummary,
-  upsertMonthlySavings
+  upsertMonthlySavings,
+  getAnnualGoal,
+  setAnnualGoal
 } from '../services/savingsService'
 
 export const useSavingsStore = defineStore('savings', {
@@ -23,6 +25,7 @@ export const useSavingsStore = defineStore('savings', {
       byMonth: Array.from({ length: 12 }, () => 0),
       count: 0,
     },
+    annualGoal: 0,
     _unsubscribe: null,
   }),
 
@@ -80,6 +83,32 @@ export const useSavingsStore = defineStore('savings', {
         this.summary = await getSavingsSummary(userStore.userId, this.filterYear)
       } catch (e) {
         console.error('Error loading savings summary:', e)
+      }
+    },
+
+    async loadAnnualGoal() {
+      const userStore = useUserStore()
+      if (!userStore.userId) return
+      try {
+        this.annualGoal = await getAnnualGoal(userStore.userId, this.filterYear)
+      } catch (e) {
+        console.error('Error loading annual goal:', e)
+      }
+    },
+
+    async setAnnualGoalAmount(amount) {
+      const userStore = useUserStore()
+      if (!userStore.userId) throw new Error('Usuario no autenticado')
+      this.loading = true
+      this.error = null
+      try {
+        await setAnnualGoal(userStore.userId, this.filterYear, Number(amount || 0))
+        this.annualGoal = Number(amount || 0)
+      } catch (e) {
+        this.error = e.message
+        throw e
+      } finally {
+        this.loading = false
       }
     },
 
@@ -170,6 +199,7 @@ export const useSavingsStore = defineStore('savings', {
         this.startRealtime()
       }
       this.loadSavings(this.filterYear)
+      this.loadAnnualGoal()
     },
 
     setMonth(month) {
