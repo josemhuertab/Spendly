@@ -6,7 +6,8 @@ import {
   updateSaving,
   deleteSaving,
   subscribeSavings,
-  getSavingsSummary
+  getSavingsSummary,
+  upsertMonthlySavings
 } from '../services/savingsService'
 
 export const useSavingsStore = defineStore('savings', {
@@ -15,6 +16,7 @@ export const useSavingsStore = defineStore('savings', {
     loading: false,
     error: null,
     filterYear: new Date().getFullYear(),
+    filterMonth: null, // 1-12 o null para todos
     summary: {
       totalAll: 0,
       totalYear: 0,
@@ -26,19 +28,29 @@ export const useSavingsStore = defineStore('savings', {
 
   getters: {
     savingsOfYear: (state) => state.savings.filter(s => Number(s.year) === Number(state.filterYear)),
+    savingsOfMonth: (state) => state.filterMonth
+      ? state.savings.filter(s => Number(s.year) === Number(state.filterYear) && Number(s.month) === Number(state.filterMonth))
+      : state.savings.filter(s => Number(s.year) === Number(state.filterYear)),
   },
 
   actions: {
-    async loadSavings() {
-      const userStore = useUserStore()
-      if (!userStore.userId) { this.error = 'Usuario no autenticado'; return }
+    async loadSavings(year = null) {
       this.loading = true
       this.error = null
+      
       try {
-        this.savings = await getSavings(userStore.userId, this.filterYear)
+        const userStore = useUserStore()
+        
+        if (!userStore.user) {
+          throw new Error('Usuario no autenticado')
+        }
+
+        const savingsData = await getSavings(userStore.user.uid, year)
+        this.savings = savingsData
         await this.loadSummary()
-      } catch (e) {
-        this.error = e.message
+      } catch (error) {
+        console.error('Error al cargar ahorros:', error)
+        this.error = error.message
       } finally {
         this.loading = false
       }
@@ -132,6 +144,24 @@ export const useSavingsStore = defineStore('savings', {
       }
     },
 
+    async saveYearMonths(monthsArray) {
+      const userStore = useUserStore()
+      if (!userStore.userId) throw new Error('Usuario no autenticado')
+      this.loading = true
+      this.error = null
+      try {
+        await upsertMonthlySavings(userStore.userId, this.filterYear, monthsArray)
+        if (!this._unsubscribe) {
+          await this.loadSavings()
+        }
+      } catch (e) {
+        this.error = e.message
+        throw e
+      } finally {
+        this.loading = false
+      }
+    },
+
     setYear(year) {
       this.filterYear = Number(year)
       // Reiniciar suscripción si está activa
@@ -139,7 +169,11 @@ export const useSavingsStore = defineStore('savings', {
         this.stopRealtime()
         this.startRealtime()
       }
-      this.loadSavings()
+      this.loadSavings(this.filterYear)
+    },
+
+    setMonth(month) {
+      this.filterMonth = month ? Number(month) : null
     },
 
     clearError() { this.error = null },

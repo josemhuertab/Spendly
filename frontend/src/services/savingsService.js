@@ -36,30 +36,35 @@ export async function addSaving(userId, data) {
   }
 }
 
-export async function getSavings(userId, year) {
+export const getSavings = async (userId, year = null) => {
   try {
-    let q
+    const savingsRef = collection(db, 'users', userId, 'savings')
+    
+    let q = query(savingsRef)
+    
     if (year) {
-      q = query(userSavingsCol(userId), where('year', '==', Number(year)), orderBy('month', 'asc'))
+      q = query(savingsRef, where('year', '==', year), orderBy('month'))
     } else {
-      q = query(userSavingsCol(userId), orderBy('year', 'desc'), orderBy('month', 'asc'))
+      q = query(savingsRef, orderBy('year', 'desc'), orderBy('month', 'desc'))
     }
-    const snapshot = await getDocs(q)
+    
+    const querySnapshot = await getDocs(q)
+    
     const savings = []
-    snapshot.forEach((docSnap) => savings.push({ id: docSnap.id, ...docSnap.data() }))
+    querySnapshot.forEach((doc) => {
+      const data = doc.data()
+      savings.push({
+        id: doc.id,
+        ...data,
+        createdAt: data.createdAt?.toDate(),
+        updatedAt: data.updatedAt?.toDate()
+      })
+    })
+    
     return savings
   } catch (error) {
-    // Fallback si falta índice
-    if (error?.code === 'failed-precondition') {
-      const snapshot = await getDocs(userSavingsCol(userId))
-      const savings = []
-      snapshot.forEach((docSnap) => savings.push({ id: docSnap.id, ...docSnap.data() }))
-      if (year) savings.filter((s) => s.year === Number(year))
-      savings.sort((a, b) => (a.year - b.year) || (a.month - b.month))
-      return savings
-    }
-    console.error('Error getting savings:', error)
-    throw new Error(error.message || 'Error al obtener ahorros')
+    console.error('Error al obtener ahorros:', error)
+    throw error
   }
 }
 
@@ -123,17 +128,45 @@ export async function deleteSaving(userId, id) {
 }
 
 export async function getSavingsSummary(userId, year) {
-  const savings = await getSavings(userId, year)
-  const total = savings.reduce((sum, s) => sum + Number(s.amount || 0), 0)
+  // Ahorros del año seleccionado
+  const yearSavings = await getSavings(userId, year)
+  const totalYear = yearSavings.reduce((sum, s) => sum + Number(s.amount || 0), 0)
   const byMonth = Array.from({ length: 12 }, () => 0)
-  savings.forEach((s) => {
+  yearSavings.forEach((s) => {
     const m = Number(s.month)
     if (m >= 1 && m <= 12) byMonth[m - 1] += Number(s.amount || 0)
   })
+  // Ahorros totales (todos los años)
+  const allSavings = await getSavings(userId, null)
+  const totalAll = allSavings.reduce((sum, s) => sum + Number(s.amount || 0), 0)
+
   return {
-    totalAll: year ? total : savings.reduce((sum, s) => sum + Number(s.amount || 0), 0),
-    totalYear: total,
+    totalAll,
+    totalYear,
     byMonth,
-    count: savings.length,
+    count: yearSavings.length,
   }
+}
+
+// Nuevo: upsert de montos por año (12 meses)
+export async function upsertMonthlySavings(userId, year, monthsArray) {
+  // monthsArray: array de 12 números (índice 0 -> enero)
+  const existing = await getSavings(userId, year)
+  const ops = []
+  for (let i = 0; i < 12; i++) {
+    const amount = Number(monthsArray[i] || 0)
+    const month = i + 1
+    const current = existing.find((s) => Number(s.month) === month)
+    if (!amount || amount <= 0) {
+      // Si el mes no tiene monto, no crear nada; opcionalmente podríamos borrar
+      continue
+    }
+    if (current) {
+      ops.push(updateSaving(userId, current.id, { year: Number(year), month, amount }))
+    } else {
+      ops.push(addSaving(userId, { year: Number(year), month, amount }))
+    }
+  }
+  await Promise.all(ops)
+  return true
 }

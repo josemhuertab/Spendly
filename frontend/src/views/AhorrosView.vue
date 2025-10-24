@@ -1,16 +1,19 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
-import { useSavingsStore } from '../store/savingsStore'
-import { useCurrencyStore } from '../store/currencyStore'
+import { useSavingsStore } from '@/store/savingsStore'
+import { useCurrencyStore } from '@/store/currencyStore'
 import SavingsForm from '../components/SavingsForm.vue'
 import SavingsTable from '../components/SavingsTable.vue'
+import SavingsYearForm from '../components/SavingsYearForm.vue'
 
 const savingsStore = useSavingsStore()
 const currencyStore = useCurrencyStore()
 
 const showForm = ref(false)
+const showYearForm = ref(false)
 const editingSaving = ref(null)
 const isEditing = ref(false)
+
 
 const years = computed(() => {
   const current = new Date().getFullYear()
@@ -20,7 +23,21 @@ const years = computed(() => {
   return Array.from(set).sort((a, b) => b - a)
 })
 
+const monthItems = [
+  { value: null, label: 'Todos' },
+  { value: 1, label: 'Enero' }, { value: 2, label: 'Febrero' }, { value: 3, label: 'Marzo' },
+  { value: 4, label: 'Abril' }, { value: 5, label: 'Mayo' }, { value: 6, label: 'Junio' },
+  { value: 7, label: 'Julio' }, { value: 8, label: 'Agosto' }, { value: 9, label: 'Septiembre' },
+  { value: 10, label: 'Octubre' }, { value: 11, label: 'Noviembre' }, { value: 12, label: 'Diciembre' }
+]
+
 const summary = computed(() => savingsStore.summary)
+const selectedMonthTotal = computed(() => {
+  if (!savingsStore.filterMonth) return 0
+  const idx = Number(savingsStore.filterMonth) - 1
+  const val = summary.value.byMonth[idx] || 0
+  return Number(val)
+})
 
 function openNew() {
   editingSaving.value = null
@@ -44,7 +61,7 @@ function onSaved() {
 function onCancelled() { showForm.value = false }
 
 onMounted(async () => {
-  await savingsStore.loadSavings()
+  await savingsStore.loadSavings(savingsStore.filterYear)
   savingsStore.startRealtime()
 })
 
@@ -72,14 +89,30 @@ onUnmounted(() => savingsStore.stopRealtime())
             style="max-width:160px"
             @update:model-value="savingsStore.setYear($event)"
           />
+          <v-select
+            v-model="savingsStore.filterMonth"
+            :items="monthItems"
+            item-title="label"
+            item-value="value"
+            label="Mes"
+            variant="outlined"
+            density="comfortable"
+            hide-details
+            style="max-width:180px"
+            @update:model-value="savingsStore.setMonth($event)"
+          />
           <v-btn color="primary" size="large" prepend-icon="mdi-plus" class="bg-gradient-to-r from-green-600 to-green-700 text-white shadow-lg hover:shadow-xl" @click="openNew">
             Nuevo Ahorro
           </v-btn>
+          <v-btn color="secondary" size="large" prepend-icon="mdi-calendar-multiselect" class="bg-gradient-to-r from-emerald-600 to-emerald-700 text-white shadow-lg hover:shadow-xl" @click="showYearForm=true">
+            Registrar por Año
+          </v-btn>
+
         </div>
       </div>
 
       <!-- Summary Cards -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
         <v-card class="rounded-xl border-0 shadow-md hover:shadow-lg transition-shadow duration-200">
           <v-card-text class="p-6">
             <div class="flex items-center justify-between">
@@ -98,39 +131,25 @@ onUnmounted(() => savingsStore.stopRealtime())
           <v-card-text class="p-6">
             <div class="flex items-center justify-between">
               <div>
+                <p class="text-sm font-medium text-gray-600 mb-1">Total General</p>
+                <p class="text-2xl font-bold text-teal-600">{{ currencyStore.formatAmount(summary.totalAll) }}</p>
+              </div>
+              <div class="p-3 rounded-full bg-teal-100">
+                <v-icon color="teal" size="24">mdi-sigma</v-icon>
+              </div>
+            </div>
+          </v-card-text>
+        </v-card>
+
+        <v-card class="rounded-xl border-0 shadow-md hover:shadow-lg transition-shadow duration-200">
+          <v-card-text class="p-6">
+            <div class="flex items-center justify-between">
+              <div>
                 <p class="text-sm font-medium text-gray-600 mb-1">Promedio Mensual</p>
                 <p class="text-2xl font-bold text-blue-600">{{ currencyStore.formatAmount(summary.totalYear / Math.max(1, summary.byMonth.filter(m => m>0).length)) }}</p>
               </div>
               <div class="p-3 rounded-full bg-blue-100">
                 <v-icon color="primary" size="24">mdi-chart-line</v-icon>
-              </div>
-            </div>
-          </v-card-text>
-        </v-card>
-
-        <v-card class="rounded-xl border-0 shadow-md hover:shadow-lg transition-shadow duration-200">
-          <v-card-text class="p-6">
-            <div class="flex items-center justify-between">
-              <div>
-                <p class="text-sm font-medium text-gray-600 mb-1">Meses con ahorro</p>
-                <p class="text-2xl font-bold text-purple-600">{{ summary.byMonth.filter(m => m>0).length }}</p>
-              </div>
-              <div class="p-3 rounded-full bg-purple-100">
-                <v-icon color="purple" size="24">mdi-calendar-month</v-icon>
-              </div>
-            </div>
-          </v-card-text>
-        </v-card>
-
-        <v-card class="rounded-xl border-0 shadow-md hover:shadow-lg transition-shadow duration-200">
-          <v-card-text class="p-6">
-            <div class="flex items-center justify-between">
-              <div>
-                <p class="text-sm font-medium text-gray-600 mb-1">Registros</p>
-                <p class="text-2xl font-bold text-gray-700">{{ summary.count }}</p>
-              </div>
-              <div class="p-3 rounded-full bg-gray-100">
-                <v-icon color="grey" size="24">mdi-receipt</v-icon>
               </div>
             </div>
           </v-card-text>
@@ -141,9 +160,12 @@ onUnmounted(() => savingsStore.stopRealtime())
     <!-- Savings Table -->
     <SavingsTable @edit-saving="onEditSaving" />
 
-    <!-- Dialog -->
+    <!-- Dialogs -->
     <v-dialog v-model="showForm" max-width="600" persistent>
       <SavingsForm :saving="editingSaving" :is-edit="isEditing" @saved="onSaved" @cancelled="onCancelled" />
+    </v-dialog>
+    <v-dialog v-model="showYearForm" max-width="980" persistent>
+      <SavingsYearForm @saved="showYearForm=false; savingsStore.loadSavings()" @cancelled="showYearForm=false" />
     </v-dialog>
 
     <!-- Loading Overlay -->

@@ -24,7 +24,8 @@ const headers = computed(() => [
 const monthNames = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre']
 
 const items = computed(() => {
-  return savingsStore.savings.map(s => ({
+  const base = savingsStore.filterMonth ? savingsStore.savingsOfMonth : savingsStore.savingsOfYear
+  return base.map(s => ({
     ...s,
     monthLabel: monthNames[(Number(s.month) || 1) - 1]
   })).filter(s => {
@@ -68,7 +69,7 @@ async function confirmDelete() {
         hide-details
         class="flex-1"
       />
-      <v-btn @click="savingsStore.loadSavings" :loading="savingsStore.loading" variant="outlined" prepend-icon="mdi-refresh">Actualizar</v-btn>
+      <v-btn @click="() => savingsStore.loadSavings()" :loading="savingsStore.loading" variant="outlined" prepend-icon="mdi-refresh">Actualizar</v-btn>
     </div>
 
     <v-data-table
