@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, ref, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import LogoUrl from './icons/Logo.png?url'
 
@@ -10,6 +10,26 @@ const emit = defineEmits(['update:modelValue'])
 
 const route = useRoute()
 const router = useRouter()
+
+// Badge "¡Nuevo!" visible hasta que el usuario visite Compras por primera vez
+const showNewBadge = ref(true)
+
+onMounted(() => {
+  const seen = localStorage.getItem('spendly_seen_compras') === '1'
+  showNewBadge.value = !seen
+  // Si ya estamos en compras al cargar, marcar como visto
+  if (route.name === 'compras') {
+    localStorage.setItem('spendly_seen_compras', '1')
+    showNewBadge.value = false
+  }
+})
+
+watch(() => route.name, (name) => {
+  if (name === 'compras') {
+    localStorage.setItem('spendly_seen_compras', '1')
+    showNewBadge.value = false
+  }
+})
 
 function close() {
   emit('update:modelValue', false)
@@ -61,7 +81,11 @@ const isActive = (name) => computed(() => route.name === name)
         prepend-icon="mdi-credit-card-outline"
         title="Compras con Tarjeta/Cuotas"
         @click="navigate({ name: 'compras' })"
-      />
+      >
+        <template #append>
+          <span v-if="showNewBadge" class="nuevo-chip">¡Nuevo!</span>
+        </template>
+      </v-list-item>
 
       <div class="flex-grow-1" />
 
@@ -104,5 +128,28 @@ const isActive = (name) => computed(() => route.name === name)
 .sidebar-active {
   background: rgba(0, 0, 0, 0.22) !important;
   border-radius: 12px;
+}
+/* Badge "¡Nuevo!" en la opción de Compras */
+.sidebar .v-list-item { position: relative; }
+.nuevo-chip {
+  position: absolute;
+  top: 4px;
+  right: 10px;
+  background: #b91c1c; /* rojo */
+  color: #fff;
+  border-radius: 8px;
+  font-size: 9px;
+  font-weight: 700;
+  padding: 1px 6px;
+  letter-spacing: 0.2px;
+  text-transform: uppercase;
+  line-height: 1;
+  pointer-events: none;
+}
+@media (min-width: 768px) {
+  .nuevo-chip { font-size: 10px; padding: 2px 7px; top: 6px; right: 12px; }
+}
+@media (min-width: 1024px) {
+  .nuevo-chip { font-size: 10px; padding: 2px 7px; top: 6px; right: 12px; }
 }
 </style>
