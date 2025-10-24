@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useTransactionStore } from '../store/transactionStore'
 import { useUserStore } from '../store/userStore'
 import { useCurrencyStore } from '../store/currencyStore'
@@ -87,15 +87,20 @@ function clearAllFilters() {
 
 // Lifecycle
 onMounted(async () => {
-  // Ensure user is initialized
+  // Asegurar usuario
   if (!userStore.initialized) {
     await userStore.init()
   }
-  
-  // Load transactions
   if (userStore.isAuthenticated) {
+    // Suscripción en tiempo real
+    transactionStore.startRealtime()
+    // Carga inicial (por si ya hay datos)
     await transactionStore.loadTransactions()
   }
+})
+
+onUnmounted(() => {
+  transactionStore.stopRealtime()
 })
 </script>
 
