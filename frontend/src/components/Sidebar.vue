@@ -1,7 +1,6 @@
 <script setup>
 import { computed, ref, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import LogoUrl from './icons/Logo.png?url'
 
 const props = defineProps({
   modelValue: { type: Boolean, default: false },
@@ -91,14 +90,12 @@ const isActive = (name) => computed(() => route.name === name)
 
       <v-divider class="my-4" />
       <v-list-item
+        :active="isActive('perfil')"
         active-class="sidebar-active"
+        prepend-icon="mdi-account-circle"
+        title="Perfil de usuario"
         @click="navigate({ name: 'perfil' })"
-      >
-        <template #prepend>
-          <img :src="LogoUrl" alt="Spendly" class="sidebar__avatar" />
-        </template>
-        <v-list-item-title>Perfil de usuario</v-list-item-title>
-      </v-list-item>
+      />
       <v-list-item
         :active="isActive('configuracion')"
         active-class="sidebar-active"
