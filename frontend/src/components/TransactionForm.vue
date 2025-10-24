@@ -11,6 +11,10 @@ const props = defineProps({
   isEdit: {
     type: Boolean,
     default: false
+  },
+  presetPaymentMethod: {
+    type: String,
+    default: null
   }
 })
 
@@ -139,6 +143,8 @@ function initializeForm() {
       installments: props.transaction.installments || 1,
       installmentsPaid: props.transaction.installmentsPaid || 0
     }
+  } else if (props.presetPaymentMethod) {
+    formData.value.paymentMethod = props.presetPaymentMethod
   }
 }
 
