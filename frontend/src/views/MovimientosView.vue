@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useTransactionStore } from '../store/transactionStore'
 import { useUserStore } from '../store/userStore'
 import { useCurrencyStore } from '../store/currencyStore'
@@ -20,11 +20,8 @@ const activeTab = ref('all')
 const summary = computed(() => transactionStore.summary)
 
 const formattedBalance = computed(() => {
-  const balance = summary.value.balance
-  // Convert from USD (stored) to current currency for display
-  const convertedBalance = currencyStore.convertAmount(balance, 'USD', currencyStore.currentCurrency)
-  const formatted = currencyStore.formatAmount(Math.abs(convertedBalance))
-  
+  const balance = Number(summary.value.balance || 0)
+  const formatted = currencyStore.formatAmount(Math.abs(balance))
   return {
     amount: formatted,
     isPositive: balance >= 0,
@@ -33,15 +30,11 @@ const formattedBalance = computed(() => {
 })
 
 const formattedIngresos = computed(() => {
-  // Convert from USD (stored) to current currency for display
-  const convertedIngresos = currencyStore.convertAmount(summary.value.totalIngresos, 'USD', currencyStore.currentCurrency)
-  return currencyStore.formatAmount(convertedIngresos)
+  return currencyStore.formatAmount(Number(summary.value.totalIngresos || 0))
 })
 
 const formattedGastos = computed(() => {
-  // Convert from USD (stored) to current currency for display
-  const convertedGastos = currencyStore.convertAmount(summary.value.totalGastos, 'USD', currencyStore.currentCurrency)
-  return currencyStore.formatAmount(convertedGastos)
+  return currencyStore.formatAmount(Number(summary.value.totalGastos || 0))
 })
 
 // Methods
@@ -97,6 +90,10 @@ onMounted(async () => {
     // Carga inicial (por si ya hay datos)
     await transactionStore.loadTransactions()
   }
+  // Recalcular resumen si cambia la moneda
+  watch(() => currencyStore.currentCurrency, () => {
+    transactionStore.loadSummary()
+  })
 })
 
 onUnmounted(() => {

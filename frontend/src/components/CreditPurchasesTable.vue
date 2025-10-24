@@ -50,8 +50,8 @@ const items = computed(() => {
   ))
 })
 
-function formatAmount(amount) {
-  const converted = currencyStore.convertAmount(amount, 'USD', currencyStore.currentCurrency)
+function formatAmount(amount, fromCurrency) {
+  const converted = currencyStore.convertAmount(Number(amount || 0), fromCurrency || currencyStore.currentCurrency, currencyStore.currentCurrency)
   return currencyStore.formatAmount(converted)
 }
 
@@ -89,13 +89,13 @@ async function markInstallmentPaid(item) {
       class="border-t"
     >
       <template #item.amount="{ item }">
-        <span class="font-semibold">{{ formatAmount(item.amount) }}</span>
+        <span class="font-semibold">{{ formatAmount(item.amount, item.currency) }}</span>
       </template>
       <template #item.installmentAmount="{ item }">
-        <span>{{ formatAmount(item.installmentAmount) }}</span>
+        <span>{{ formatAmount(item.installmentAmount, item.currency) }}</span>
       </template>
       <template #item.remainingAmount="{ item }">
-        <span class="font-semibold text-red-600">{{ formatAmount(item.remainingAmount) }}</span>
+        <span class="font-semibold text-red-600">{{ formatAmount(item.remainingAmount, item.currency) }}</span>
       </template>
       <template #item.actions="{ item }">
         <div class="flex gap-2">
