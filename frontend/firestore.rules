@@ -9,16 +9,16 @@ service cloud.firestore {
 
     // Subcolección de transacciones: /users/{userId}/transactions/{transactionId}
     match /users/{userId}/transactions/{transactionId} {
-      // Lectura: el usuario autenticado solo su propio contenido
+      // Leer: solo el dueño autenticado
       allow read: if request.auth != null && request.auth.uid == userId;
 
-      // Crear: el uid debe coincidir con el path y con el campo userId
+      // Crear: uid debe coincidir con el path y con el campo userId
       allow create: if request.auth != null &&
         request.auth.uid == userId &&
         request.auth.uid == request.resource.data.userId &&
         validateTransactionData(request.resource.data);
 
-      // Actualizar: mantiene validación y pertenencia
+      // Actualizar: validación y pertenencia
       allow update: if request.auth != null &&
         request.auth.uid == userId &&
         request.auth.uid == resource.data.userId &&
@@ -31,7 +31,7 @@ service cloud.firestore {
         request.auth.uid == resource.data.userId;
     }
 
-    // (Compatibilidad) Si todavía existe colección a nivel raíz
+    // (Compatibilidad) Si aún existe colección a nivel raíz
     match /transactions/{transactionId} {
       allow read, write: if request.auth != null && 
         request.auth.uid == resource.data.userId;
@@ -44,10 +44,28 @@ service cloud.firestore {
         validateTransactionData(request.resource.data);
     }
 
-    // Categorías (opcional)
-    match /categories/{categoryId} {
-      allow read: if request.auth != null;
-      allow write: if request.auth != null && request.auth.token.admin == true;
+    // Subcolección de ahorros: /users/{userId}/savings/{savingId}
+    match /users/{userId}/savings/{savingId} {
+      // Leer: solo el dueño autenticado
+      allow read: if request.auth != null && request.auth.uid == userId;
+
+      // Crear: uid debe coincidir con el path y con el campo userId
+      allow create: if request.auth != null &&
+        request.auth.uid == userId &&
+        request.auth.uid == request.resource.data.userId &&
+        validateSavingData(request.resource.data);
+
+      // Actualizar: validación y pertenencia
+      allow update: if request.auth != null &&
+        request.auth.uid == userId &&
+        request.auth.uid == resource.data.userId &&
+        request.auth.uid == request.resource.data.userId &&
+        validateSavingData(request.resource.data);
+
+      // Eliminar: solo el dueño
+      allow delete: if request.auth != null &&
+        request.auth.uid == userId &&
+        request.auth.uid == resource.data.userId;
     }
 
     // Validación de datos de transacción
@@ -64,6 +82,21 @@ service cloud.firestore {
         (data.subcategory == null || data.subcategory is string) &&
         (data.installments == null || (data.installments is number && data.installments > 0)) &&
         (data.installmentsPaid == null || (data.installmentsPaid is number && data.installmentsPaid >= 0)) &&
+        data.createdAt is timestamp &&
+        (data.updatedAt == null || data.updatedAt is timestamp);
+    }
+
+    // Validación de datos de ahorros
+    function validateSavingData(data) {
+      return data.keys().hasAll(['userId', 'year', 'month', 'amount']) &&
+        data.userId is string &&
+        data.year is number &&
+        data.year >= 2020 && data.year <= 2030 &&
+        data.month is number &&
+        data.month >= 1 && data.month <= 12 &&
+        data.amount is number &&
+        data.amount >= 0 &&
+        (data.note == null || data.note is string) &&
         data.createdAt is timestamp &&
         (data.updatedAt == null || data.updatedAt is timestamp);
     }
