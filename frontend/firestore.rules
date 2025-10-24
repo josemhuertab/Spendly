@@ -2,35 +2,55 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Users can only access their own user document
+    // Usuario: documento principal
     match /users/{userId} {
       allow read, write: if request.auth != null && request.auth.uid == userId;
     }
-    
-    // Transactions: users can only access their own transactions
+
+    // Subcolección de transacciones: /users/{userId}/transactions/{transactionId}
+    match /users/{userId}/transactions/{transactionId} {
+      // Lectura: el usuario autenticado solo su propio contenido
+      allow read: if request.auth != null && request.auth.uid == userId;
+
+      // Crear: el uid debe coincidir con el path y con el campo userId
+      allow create: if request.auth != null &&
+        request.auth.uid == userId &&
+        request.auth.uid == request.resource.data.userId &&
+        validateTransactionData(request.resource.data);
+
+      // Actualizar: mantiene validación y pertenencia
+      allow update: if request.auth != null &&
+        request.auth.uid == userId &&
+        request.auth.uid == resource.data.userId &&
+        request.auth.uid == request.resource.data.userId &&
+        validateTransactionData(request.resource.data);
+
+      // Eliminar: solo el dueño
+      allow delete: if request.auth != null &&
+        request.auth.uid == userId &&
+        request.auth.uid == resource.data.userId;
+    }
+
+    // (Compatibilidad) Si todavía existe colección a nivel raíz
     match /transactions/{transactionId} {
       allow read, write: if request.auth != null && 
         request.auth.uid == resource.data.userId;
-      
       allow create: if request.auth != null && 
         request.auth.uid == request.resource.data.userId &&
         validateTransactionData(request.resource.data);
-      
       allow update: if request.auth != null && 
         request.auth.uid == resource.data.userId &&
         request.auth.uid == request.resource.data.userId &&
         validateTransactionData(request.resource.data);
     }
-    
-    // Categories collection (if you plan to have shared categories)
+
+    // Categorías (opcional)
     match /categories/{categoryId} {
       allow read: if request.auth != null;
-      // Only allow admins to write categories (optional)
-      allow write: if request.auth != null && 
-        request.auth.token.admin == true;
+      allow write: if request.auth != null && request.auth.token.admin == true;
     }
-    
-    // Helper function to validate transaction data
+
+    // Validación de datos de transacción
     function validateTransactionData(data) {
       return data.keys().hasAll(['userId', 'type', 'category', 'amount', 'date', 'paymentMethod']) &&
         data.userId is string &&

@@ -6,7 +6,8 @@ import {
   deleteTransaction,
   getTransactionsSummary,
   getTransactionsByType,
-  getTransactionsByCategory
+  getTransactionsByCategory,
+  subscribeUserTransactions
 } from '../services/firestoreService'
 import { useUserStore } from './userStore'
 
@@ -26,7 +27,8 @@ export const useTransactionStore = defineStore('transactions', {
       category: null,
       dateFrom: null,
       dateTo: null
-    }
+    },
+    _unsubscribe: null,
   }),
   
   getters: {
@@ -89,6 +91,23 @@ export const useTransactionStore = defineStore('transactions', {
         this.loading = false
       }
     },
+
+    startRealtime() {
+      const userStore = useUserStore()
+      if (!userStore.userId) return
+      if (this._unsubscribe) return
+      this._unsubscribe = subscribeUserTransactions(userStore.userId, async (txs) => {
+        this.transactions = txs
+        await this.loadSummary()
+      })
+    },
+
+    stopRealtime() {
+      if (this._unsubscribe) {
+        try { this._unsubscribe() } catch {}
+        this._unsubscribe = null
+      }
+    },
     
     async loadSummary() {
       const userStore = useUserStore()
@@ -112,18 +131,18 @@ export const useTransactionStore = defineStore('transactions', {
       
       try {
         const transactionId = await createTransaction(transactionData, userStore.userId)
-        
-        // Agregar la transacción al estado local
-        const newTransaction = {
-          id: transactionId,
-          ...transactionData,
-          userId: userStore.userId,
-          createdAt: new Date(),
-          updatedAt: new Date()
+        // Cuando hay suscripción en tiempo real, el estado se actualizará automáticamente.
+        if (!this._unsubscribe) {
+          const newTransaction = {
+            id: transactionId,
+            ...transactionData,
+            userId: userStore.userId,
+            createdAt: new Date(),
+            updatedAt: new Date()
+          }
+          this.transactions.unshift(newTransaction)
+          await this.loadSummary()
         }
-        
-        this.transactions.unshift(newTransaction)
-        await this.loadSummary()
         
         return transactionId
       } catch (error) {
@@ -145,18 +164,18 @@ export const useTransactionStore = defineStore('transactions', {
       
       try {
         await updateTransaction(transactionId, updateData, userStore.userId)
-        
-        // Actualizar en el estado local
-        const index = this.transactions.findIndex(t => t.id === transactionId)
-        if (index !== -1) {
-          this.transactions[index] = {
-            ...this.transactions[index],
-            ...updateData,
-            updatedAt: new Date()
+        // Si no hay suscripción, actualizamos localmente
+        if (!this._unsubscribe) {
+          const index = this.transactions.findIndex(t => t.id === transactionId)
+          if (index !== -1) {
+            this.transactions[index] = {
+              ...this.transactions[index],
+              ...updateData,
+              updatedAt: new Date()
+            }
           }
+          await this.loadSummary()
         }
-        
-        await this.loadSummary()
       } catch (error) {
         this.error = error.message
         throw error
@@ -176,10 +195,11 @@ export const useTransactionStore = defineStore('transactions', {
       
       try {
         await deleteTransaction(transactionId, userStore.userId)
-        
-        // Remover del estado local
-        this.transactions = this.transactions.filter(t => t.id !== transactionId)
-        await this.loadSummary()
+        // Si no hay suscripción, removemos localmente
+        if (!this._unsubscribe) {
+          this.transactions = this.transactions.filter(t => t.id !== transactionId)
+          await this.loadSummary()
+        }
       } catch (error) {
         this.error = error.message
         throw error
