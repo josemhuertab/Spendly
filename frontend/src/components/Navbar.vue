@@ -3,7 +3,7 @@ import { useRouter } from 'vue-router'
 import { useUserStore } from '../store/userStore'
 import { logoutUser } from '../services/authService'
 import { useDisplay } from 'vuetify'
-import LogoUrl from './icons/Logo.png?url'
+import LogoUrl from './icons/Logo-blanco.png?url'
 
 const router = useRouter()
 const userStore = useUserStore()
@@ -75,7 +75,11 @@ const menuItems = [
   height: 36px;
   border-radius: 8px;
   margin-left: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
   cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.nav-logo:hover {
+  opacity: 0.8;
 }
 </style>
