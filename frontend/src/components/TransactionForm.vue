@@ -15,6 +15,10 @@ const props = defineProps({
   presetPaymentMethod: {
     type: String,
     default: null
+  },
+  presetType: {
+    type: String,
+    default: null
   }
 })
 
@@ -129,6 +133,14 @@ watch(() => formData.value.installments, (newInstallments) => {
   }
 })
 
+watch(() => formData.value.paymentMethod, (newPaymentMethod) => {
+  // Reset installments when payment method is not credit card
+  if (newPaymentMethod !== 'tarjeta_credito') {
+    formData.value.installments = 1
+    formData.value.installmentsPaid = 0
+  }
+})
+
 // Methods
 function initializeForm() {
   if (props.isEdit && props.transaction) {
@@ -143,8 +155,13 @@ function initializeForm() {
       installments: props.transaction.installments || 1,
       installmentsPaid: props.transaction.installmentsPaid || 0
     }
-  } else if (props.presetPaymentMethod) {
-    formData.value.paymentMethod = props.presetPaymentMethod
+  } else {
+    if (props.presetPaymentMethod) {
+      formData.value.paymentMethod = props.presetPaymentMethod
+    }
+    if (props.presetType) {
+      formData.value.type = props.presetType
+    }
   }
 }
 
@@ -178,17 +195,25 @@ async function onSubmit() {
 
 function resetForm() {
   if (!props.isEdit) {
-    formData.value = {
-      type: 'gasto',
+    const baseForm = {
+      type: props.presetType || 'gasto',
       category: '',
       subcategory: '',
       amount: null,
       description: '',
       date: new Date().toISOString().split('T')[0],
-      paymentMethod: 'efectivo',
+      paymentMethod: props.presetPaymentMethod || 'efectivo',
       installments: 1,
       installmentsPaid: 0
     }
+    
+    // Reset installments if not credit card
+    if (baseForm.paymentMethod !== 'tarjeta_credito') {
+      baseForm.installments = 1
+      baseForm.installmentsPaid = 0
+    }
+    
+    formData.value = baseForm
   }
 }
 
@@ -230,7 +255,7 @@ onMounted(() => {
     <v-card-text class="px-6 py-6">
       <v-form @submit.prevent="onSubmit">
         <!-- Type Selection -->
-        <div class="mb-6">
+        <div class="mb-6" v-if="!props.presetType">
           <label class="block text-sm font-medium text-gray-700 mb-3">Tipo de Transacción</label>
           <v-btn-toggle
             v-model="formData.type"
@@ -248,6 +273,21 @@ onMounted(() => {
               Ingreso
             </v-btn>
           </v-btn-toggle>
+        </div>
+        
+        <!-- Type Display (when preset) -->
+        <div class="mb-6" v-if="props.presetType">
+          <label class="block text-sm font-medium text-gray-700 mb-3">Tipo de Transacción</label>
+          <v-chip 
+            :color="formData.type === 'gasto' ? 'error' : 'success'" 
+            size="large" 
+            class="px-4 py-2"
+          >
+            <v-icon start>
+              {{ formData.type === 'gasto' ? 'mdi-minus-circle' : 'mdi-plus-circle' }}
+            </v-icon>
+            {{ formData.type === 'gasto' ? 'Gasto' : 'Ingreso' }}
+          </v-chip>
         </div>
 
         <!-- Amount -->
@@ -332,8 +372,8 @@ onMounted(() => {
           required
         />
 
-        <!-- Installments (only for expenses) -->
-        <div v-if="formData.type === 'gasto'" class="grid grid-cols-2 gap-4 mb-4">
+        <!-- Installments (only for credit card expenses) -->
+        <div v-if="formData.type === 'gasto' && formData.paymentMethod === 'tarjeta_credito'" class="grid grid-cols-2 gap-4 mb-4">
           <v-text-field
             v-model.number="formData.installments"
             label="Cuotas"

@@ -41,6 +41,16 @@ const filteredTransactions = computed(() => {
 
 const hasTransactions = computed(() => filteredTransactions.value.length > 0)
 
+const hasActiveFilters = computed(() => {
+  return transactionStore.filters.type || 
+         transactionStore.filters.category ||
+         transactionStore.filters.dateFrom ||
+         transactionStore.filters.dateTo ||
+         transactionStore.filters.paymentMethod ||
+         transactionStore.filters.amountFrom !== null ||
+         transactionStore.filters.amountTo !== null
+})
+
 // Methods
 function formatAmount(amount, type, fromCurrency) {
   // Convert from transaction currency to current currency for display
@@ -121,6 +131,55 @@ async function refreshTransactions() {
   }
 }
 
+function clearDateFilters() {
+  transactionStore.setFilter('dateFrom', null)
+  transactionStore.setFilter('dateTo', null)
+}
+
+function clearAmountFilters() {
+  transactionStore.setFilter('amountFrom', null)
+  transactionStore.setFilter('amountTo', null)
+}
+
+function formatDateRange() {
+  const from = transactionStore.filters.dateFrom
+  const to = transactionStore.filters.dateTo
+  
+  if (from && to) {
+    const fromDate = new Date(from)
+    const toDate = new Date(to)
+    
+    // Check if it's a month range
+    if (fromDate.getDate() === 1 && toDate.getDate() === new Date(toDate.getFullYear(), toDate.getMonth() + 1, 0).getDate()) {
+      if (fromDate.getFullYear() === toDate.getFullYear() && fromDate.getMonth() === toDate.getMonth()) {
+        return fromDate.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' })
+      }
+      return `${fromDate.toLocaleDateString('es-ES', { month: 'short', year: 'numeric' })} - ${toDate.toLocaleDateString('es-ES', { month: 'short', year: 'numeric' })}`
+    }
+    
+    return `${formatDate(from)} - ${formatDate(to)}`
+  } else if (from) {
+    return `Desde ${formatDate(from)}`
+  } else if (to) {
+    return `Hasta ${formatDate(to)}`
+  }
+  return 'Rango de fechas'
+}
+
+function formatAmountRange() {
+  const from = transactionStore.filters.amountFrom
+  const to = transactionStore.filters.amountTo
+  
+  if (from !== null && to !== null) {
+    return `${currencyStore.formatAmount(from)} - ${currencyStore.formatAmount(to)}`
+  } else if (from !== null) {
+    return `Desde ${currencyStore.formatAmount(from)}`
+  } else if (to !== null) {
+    return `Hasta ${currencyStore.formatAmount(to)}`
+  }
+  return 'Rango de montos'
+}
+
 // Lifecycle
 onMounted(() => {
   if (transactionStore.transactions.length === 0) {
@@ -155,7 +214,7 @@ onMounted(() => {
     </div>
 
     <!-- Filters Summary -->
-    <div v-if="transactionStore.filters.type || transactionStore.filters.category" class="mb-4">
+    <div v-if="hasActiveFilters" class="mb-4">
       <div class="flex flex-wrap gap-2">
         <v-chip
           v-if="transactionStore.filters.type"
@@ -177,6 +236,39 @@ onMounted(() => {
         >
           <v-icon start icon="mdi-tag" />
           {{ transactionStore.filters.category }}
+        </v-chip>
+        
+        <v-chip
+          v-if="transactionStore.filters.paymentMethod"
+          color="info"
+          variant="flat"
+          closable
+          @click:close="transactionStore.setFilter('paymentMethod', null)"
+        >
+          <v-icon start icon="mdi-credit-card" />
+          {{ formatPaymentMethod(transactionStore.filters.paymentMethod) }}
+        </v-chip>
+        
+        <v-chip
+          v-if="transactionStore.filters.dateFrom || transactionStore.filters.dateTo"
+          color="warning"
+          variant="flat"
+          closable
+          @click:close="clearDateFilters"
+        >
+          <v-icon start icon="mdi-calendar" />
+          {{ formatDateRange() }}
+        </v-chip>
+        
+        <v-chip
+          v-if="transactionStore.filters.amountFrom !== null || transactionStore.filters.amountTo !== null"
+          color="secondary"
+          variant="flat"
+          closable
+          @click:close="clearAmountFilters"
+        >
+          <v-icon start icon="mdi-currency-usd" />
+          {{ formatAmountRange() }}
         </v-chip>
       </div>
     </div>

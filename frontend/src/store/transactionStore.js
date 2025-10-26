@@ -26,7 +26,10 @@ export const useTransactionStore = defineStore('transactions', {
       type: null, // 'gasto' | 'ingreso' | null
       category: null,
       dateFrom: null,
-      dateTo: null
+      dateTo: null,
+      paymentMethod: null,
+      amountFrom: null,
+      amountTo: null
     },
     _unsubscribe: null,
   }),
@@ -51,7 +54,19 @@ export const useTransactionStore = defineStore('transactions', {
         filtered = filtered.filter(t => t.date <= state.filters.dateTo)
       }
       
-      return filtered
+      if (state.filters.paymentMethod) {
+        filtered = filtered.filter(t => t.paymentMethod === state.filters.paymentMethod)
+      }
+      
+      if (state.filters.amountFrom !== null && state.filters.amountFrom !== undefined) {
+        filtered = filtered.filter(t => Number(t.amount) >= state.filters.amountFrom)
+      }
+      
+      if (state.filters.amountTo !== null && state.filters.amountTo !== undefined) {
+        filtered = filtered.filter(t => Number(t.amount) <= state.filters.amountTo)
+      }
+      
+      return filtered.sort((a, b) => new Date(b.date) - new Date(a.date))
     },
     
     gastos: (state) => state.transactions.filter(t => t.type === 'gasto'),
@@ -260,7 +275,10 @@ export const useTransactionStore = defineStore('transactions', {
         type: null,
         category: null,
         dateFrom: null,
-        dateTo: null
+        dateTo: null,
+        paymentMethod: null,
+        amountFrom: null,
+        amountTo: null
       }
     },
 

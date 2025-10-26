@@ -131,7 +131,7 @@ onUnmounted(() => transactionStore.stopRealtime())
 
     <!-- Dialogs -->
     <v-dialog v-model="showForm" max-width="720" persistent>
-      <TransactionForm :transaction="editingTransaction" :is-edit="isEditing" :preset-payment-method="'tarjeta_credito'" @saved="onSaved" @cancelled="showForm=false" />
+      <TransactionForm :transaction="editingTransaction" :is-edit="isEditing" :preset-payment-method="'tarjeta_credito'" :preset-type="'gasto'" @saved="onSaved" @cancelled="showForm=false" />
     </v-dialog>
 
     <!-- Loading Overlay -->
