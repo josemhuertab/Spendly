@@ -78,6 +78,10 @@ async function confirmDelete() {
       :sort-by="sortBy"
       item-key="id"
       class="border-t"
+      no-data-text="No hay ahorros registrados"
+      loading-text="Cargando ahorros..."
+      items-per-page-text="Ahorros por página"
+      page-text="{0}-{1} de {2}"
     >
       <template #item.amount="{ item }">
         <span class="font-semibold">

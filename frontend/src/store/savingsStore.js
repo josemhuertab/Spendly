@@ -18,7 +18,9 @@ export const useSavingsStore = defineStore('savings', {
     loading: false,
     error: null,
     filterYear: new Date().getFullYear(),
-    filterMonth: null, // 1-12 o null para todos
+    filterMonth: null, // 1-12 o null para todos (null = todos los meses del año)
+    filterYearTo: null, // Para rangos de años
+    filterMonthTo: null, // Para rangos de meses
     summary: {
       totalAll: 0,
       totalYear: 0,
@@ -30,10 +32,52 @@ export const useSavingsStore = defineStore('savings', {
   }),
 
   getters: {
-    savingsOfYear: (state) => state.savings.filter(s => Number(s.year) === Number(state.filterYear)),
-    savingsOfMonth: (state) => state.filterMonth
-      ? state.savings.filter(s => Number(s.year) === Number(state.filterYear) && Number(s.month) === Number(state.filterMonth))
-      : state.savings.filter(s => Number(s.year) === Number(state.filterYear)),
+    savingsOfYear: (state) => {
+      return state.savings.filter(s => {
+        const year = Number(s.year)
+        const month = Number(s.month)
+        
+        // Filtro por rango de años
+        const fromYear = state.filterYear
+        const toYear = state.filterYearTo || state.filterYear
+        
+        if (year < fromYear || year > toYear) return false
+        
+        // Si hay filtro de meses y estamos en el rango de años
+        if (state.filterMonth || state.filterMonthTo) {
+          const fromMonth = state.filterMonth || 1
+          const toMonth = state.filterMonthTo || 12
+          
+          // Si es el mismo año, filtrar por meses
+          if (fromYear === toYear) {
+            return month >= fromMonth && month <= toMonth
+          }
+          
+          // Si son años diferentes
+          if (year === fromYear) {
+            return month >= fromMonth
+          } else if (year === toYear) {
+            return month <= toMonth
+          } else {
+            return true // Años intermedios, todos los meses
+          }
+        }
+        
+        return true
+      })
+    },
+    
+    savingsOfMonth: (state) => {
+      // Mantener compatibilidad con filtro de mes específico
+      if (state.filterMonth && !state.filterMonthTo && !state.filterYearTo) {
+        return state.savings.filter(s => 
+          Number(s.year) === Number(state.filterYear) && 
+          Number(s.month) === Number(state.filterMonth)
+        )
+      }
+      // Usar el getter savingsOfYear que ya maneja rangos
+      return state.savingsOfYear
+    },
   },
 
   actions: {
@@ -204,6 +248,36 @@ export const useSavingsStore = defineStore('savings', {
 
     setMonth(month) {
       this.filterMonth = month ? Number(month) : null
+    },
+    
+    setDateRange(fromYear, fromMonth, toYear, toMonth) {
+      this.filterYear = fromYear
+      this.filterMonth = fromMonth
+      this.filterYearTo = toYear
+      this.filterMonthTo = toMonth
+      
+      // Reiniciar suscripción si está activa
+      if (this._unsubscribe) {
+        this.stopRealtime()
+        this.startRealtime()
+      }
+      this.loadSavings(this.filterYear)
+      this.loadAnnualGoal()
+    },
+    
+    clearFilters() {
+      this.filterYear = new Date().getFullYear()
+      this.filterMonth = null // null = todos los meses del año actual
+      this.filterYearTo = null
+      this.filterMonthTo = null
+      
+      // Reiniciar suscripción si está activa
+      if (this._unsubscribe) {
+        this.stopRealtime()
+        this.startRealtime()
+      }
+      this.loadSavings(this.filterYear)
+      this.loadAnnualGoal()
     },
 
     clearError() { this.error = null },
