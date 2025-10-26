@@ -11,6 +11,7 @@ const currencyStore = useCurrencyStore()
 const search = ref('')
 const sortBy = ref([{ key: 'date', order: 'desc' }])
 const headers = computed(() => [
+  { title: 'Estado', key: 'status', sortable: false, width: '80px' },
   { title: 'Fecha', key: 'date', sortable: true, width: '120px' },
   { title: 'Descripción', key: 'description', sortable: false },
   { title: 'Categoría', key: 'category', sortable: true, width: '140px' },
@@ -36,10 +37,13 @@ const items = computed(() => {
     const installmentAmount = installments > 0 ? Number(t.amount || 0) / installments : Number(t.amount || 0)
     const paidAmount = installmentAmount * installmentsPaid
     const remainingAmount = Math.max(0, Number(t.amount || 0) - paidAmount)
+    const isFullyPaid = installmentsPaid >= installments
+    
     return {
       ...t,
       installmentAmount,
       remainingAmount,
+      isFullyPaid,
     }
   })
   if (!q) return base
@@ -87,20 +91,69 @@ async function markInstallmentPaid(item) {
       :sort-by="sortBy"
       item-key="id"
       class="border-t"
+      no-data-text="No hay compras registradas"
+      loading-text="Cargando compras..."
+      items-per-page-text="Compras por página"
+      page-text="{0}-{1} de {2}"
     >
+      <template #item.status="{ item }">
+        <div class="flex justify-center">
+          <v-icon 
+            v-if="item.isFullyPaid" 
+            color="success" 
+            size="24"
+            title="Completamente pagado"
+          >
+            mdi-check-circle
+          </v-icon>
+          <v-icon 
+            v-else 
+            color="warning" 
+            size="24"
+            title="Pendiente de pago"
+          >
+            mdi-clock-outline
+          </v-icon>
+        </div>
+      </template>
+      
       <template #item.amount="{ item }">
         <span class="font-semibold">{{ formatAmount(item.amount, item.currency) }}</span>
       </template>
+      
       <template #item.installmentAmount="{ item }">
         <span>{{ formatAmount(item.installmentAmount, item.currency) }}</span>
       </template>
+      
       <template #item.remainingAmount="{ item }">
-        <span class="font-semibold text-red-600">{{ formatAmount(item.remainingAmount, item.currency) }}</span>
+        <span 
+          :class="item.isFullyPaid ? 'font-semibold text-green-600' : 'font-semibold text-red-600'"
+        >
+          {{ item.isFullyPaid ? '¡Pagado!' : formatAmount(item.remainingAmount, item.currency) }}
+        </span>
       </template>
       <template #item.actions="{ item }">
         <div class="flex gap-2">
           <v-btn size="small" variant="tonal" color="primary" prepend-icon="mdi-pencil" @click="emit('edit-transaction', item)">Editar</v-btn>
-          <v-btn size="small" variant="tonal" color="success" prepend-icon="mdi-check" @click="markInstallmentPaid(item)" :disabled="(item.installmentsPaid||0) >= (item.installments||1)">Pagar cuota</v-btn>
+          <v-btn 
+            v-if="!item.isFullyPaid"
+            size="small" 
+            variant="tonal" 
+            color="success" 
+            prepend-icon="mdi-check" 
+            @click="markInstallmentPaid(item)"
+          >
+            Pagar cuota
+          </v-btn>
+          <v-chip 
+            v-else
+            color="success" 
+            variant="flat" 
+            size="small"
+            prepend-icon="mdi-check-all"
+          >
+            Completado
+          </v-chip>
         </div>
       </template>
     </v-data-table>

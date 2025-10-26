@@ -78,7 +78,7 @@ const isActive = (name) => computed(() => route.name === name)
         :active="isActive('compras')"
         active-class="sidebar-active"
         prepend-icon="mdi-credit-card-outline"
-        title="Compras con Tarjeta/Cuotas"
+        title="Compras T. de Crédito"
         @click="navigate({ name: 'compras' })"
       >
         <template #append>

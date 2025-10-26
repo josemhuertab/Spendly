@@ -25,7 +25,7 @@ const menuItems = [
   { name: 'dashboard', label: 'Dashboard', icon: 'mdi-view-dashboard-outline' },
   { name: 'movimientos', label: 'Movimientos', icon: 'mdi-swap-horizontal' },
   { name: 'ahorros', label: 'Ahorros', icon: 'mdi-piggy-bank' },
-  { name: 'compras', label: 'Compras', icon: 'mdi-credit-card-outline' },
+  { name: 'compras', label: 'Compras T. de Crédito', icon: 'mdi-credit-card-outline' },
 ]
 </script>
 
