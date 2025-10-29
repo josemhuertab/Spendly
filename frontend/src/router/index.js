@@ -166,8 +166,7 @@ router.beforeEach(async (to, from, next) => {
 
 // Global after hook for additional cleanup or tracking
 router.afterEach((to, from) => {
-  // You can add analytics tracking here if needed
-  console.log(`Navigated from ${from.path} to ${to.path}`)
+  // Navigation tracking can be added here if needed
 })
 
 export default router

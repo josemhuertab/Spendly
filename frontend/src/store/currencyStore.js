@@ -191,7 +191,6 @@ export const useCurrencyStore = defineStore('currency', () => {
         }))
       }
     } catch (error) {
-      console.warn('Failed to update exchange rates:', error)
       // Use cached rates if available
       loadCachedRates()
     } finally {
@@ -208,7 +207,7 @@ export const useCurrencyStore = defineStore('currency', () => {
         lastUpdated.value = data.lastUpdated
       }
     } catch (error) {
-      console.warn('Failed to load cached exchange rates:', error)
+      // Failed to load cached rates
     }
   }
 

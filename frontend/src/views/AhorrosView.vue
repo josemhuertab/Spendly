@@ -197,13 +197,11 @@ watch(filterType, (newType) => {
 })
 
 onMounted(async () => {
-  // Asegurar que inicie con el año actual y todos los meses
   const currentYear = new Date().getFullYear()
   
-  // Si no hay filtros establecidos, usar año actual con todos los meses
   if (!savingsStore.filterYear || savingsStore.filterYear !== currentYear) {
     savingsStore.filterYear = currentYear
-    savingsStore.filterMonth = null // null = todos los meses
+    savingsStore.filterMonth = null
     savingsStore.filterYearTo = null
     savingsStore.filterMonthTo = null
   }
