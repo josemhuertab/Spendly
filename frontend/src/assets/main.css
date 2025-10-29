@@ -46,6 +46,25 @@ a {
   background: transparent;
 }
 
+/* Excepción: mostrar scrollbars en tablas para modo claro */
+.light-theme .v-data-table__wrapper::-webkit-scrollbar,
+.light-theme .v-table__wrapper::-webkit-scrollbar {
+  width: 8px !important;
+  height: 8px !important;
+  background: #f3f4f6 !important;
+}
+
+.light-theme .v-data-table__wrapper::-webkit-scrollbar-thumb,
+.light-theme .v-table__wrapper::-webkit-scrollbar-thumb {
+  background: #9ca3af !important;
+  border-radius: 4px !important;
+}
+
+.light-theme .v-data-table__wrapper::-webkit-scrollbar-thumb:hover,
+.light-theme .v-table__wrapper::-webkit-scrollbar-thumb:hover {
+  background: #6b7280 !important;
+}
+
 /* Ocultar scrollbar en Firefox */
 html {
   scrollbar-width: none;
