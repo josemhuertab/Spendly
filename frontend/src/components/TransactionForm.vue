@@ -2,6 +2,7 @@
 import { ref, computed, watch, onMounted } from 'vue'
 import { useTransactionStore } from '../store/transactionStore'
 import { useCurrencyStore } from '../store/currencyStore'
+import { useCategoryStore } from '../store/categoryStore'
 
 const props = defineProps({
   transaction: {
@@ -26,6 +27,7 @@ const emit = defineEmits(['saved', 'cancelled'])
 
 const transactionStore = useTransactionStore()
 const currencyStore = useCurrencyStore()
+const categoryStore = useCategoryStore()
 
 // Form data
 const formData = ref({
@@ -50,27 +52,7 @@ const rules = {
   installments: value => (value && value >= 1) || 'Las cuotas deben ser al menos 1'
 }
 
-// Categories for expenses and income
-const expenseCategories = [
-  'Alimentación',
-  'Transporte',
-  'Vivienda',
-  'Salud',
-  'Entretenimiento',
-  'Educación',
-  'Ropa',
-  'Servicios',
-  'Otros gastos'
-]
-
-const incomeCategories = [
-  'Salario',
-  'Freelance',
-  'Inversiones',
-  'Ventas',
-  'Regalos',
-  'Otros ingresos'
-]
+// Categories from store
 
 const paymentMethods = [
   'efectivo',
@@ -82,7 +64,14 @@ const paymentMethods = [
 
 // Computed properties
 const availableCategories = computed(() => {
-  return formData.value.type === 'gasto' ? expenseCategories : incomeCategories
+  return formData.value.type === 'gasto' 
+    ? categoryStore.getExpenseCategories 
+    : categoryStore.getIncomeCategories
+})
+
+const availableSubcategories = computed(() => {
+  if (!formData.value.category) return []
+  return categoryStore.getSubcategoriesForCategory(formData.value.category)
 })
 
 const isFormValid = computed(() => {
@@ -119,11 +108,23 @@ const formattedAmount = computed(() => {
   return currencyStore.formatAmount(formData.value.amount)
 })
 
+// Flag to track if form is being initialized
+const isInitializing = ref(false)
+
 // Watchers
-watch(() => formData.value.type, (newType) => {
-  // Reset category when type changes
-  formData.value.category = ''
-  formData.value.subcategory = ''
+watch(() => formData.value.type, (newType, oldType) => {
+  // Only reset category when type actually changes and not during initialization
+  if (!isInitializing.value && oldType && oldType !== newType) {
+    formData.value.category = ''
+    formData.value.subcategory = ''
+  }
+})
+
+watch(() => formData.value.category, (newCategory, oldCategory) => {
+  // Reset subcategory when category changes and not during initialization
+  if (!isInitializing.value && oldCategory && oldCategory !== newCategory) {
+    formData.value.subcategory = ''
+  }
 })
 
 watch(() => formData.value.installments, (newInstallments) => {
@@ -143,6 +144,9 @@ watch(() => formData.value.paymentMethod, (newPaymentMethod) => {
 
 // Methods
 function initializeForm() {
+  // Set initialization flag to prevent watchers from resetting values
+  isInitializing.value = true
+  
   if (props.isEdit && props.transaction) {
     formData.value = {
       type: props.transaction.type || 'gasto',
@@ -163,6 +167,11 @@ function initializeForm() {
       formData.value.type = props.presetType
     }
   }
+  
+  // Clear initialization flag after a short delay to allow Vue to process
+  setTimeout(() => {
+    isInitializing.value = false
+  }, 100)
 }
 
 async function onSubmit() {
@@ -236,7 +245,8 @@ function formatPaymentMethod(method) {
 }
 
 // Lifecycle
-onMounted(() => {
+onMounted(async () => {
+  await categoryStore.loadUserCategories()
   initializeForm()
 })
 </script>
@@ -324,14 +334,25 @@ onMounted(() => {
         />
 
         <!-- Subcategory -->
-        <v-text-field
+        <v-select
           v-model="formData.subcategory"
+          :items="availableSubcategories"
           label="Subcategoría (opcional)"
           variant="outlined"
           density="comfortable"
           prepend-inner-icon="mdi-tag-outline"
           class="mb-4"
-        />
+          clearable
+          :disabled="!formData.category || availableSubcategories.length === 0"
+        >
+          <template #no-data>
+            <v-list-item>
+              <v-list-item-title class="text-gray-500">
+                {{ formData.category ? 'No hay subcategorías para esta categoría' : 'Selecciona una categoría primero' }}
+              </v-list-item-title>
+            </v-list-item>
+          </template>
+        </v-select>
 
         <!-- Description -->
         <v-textarea

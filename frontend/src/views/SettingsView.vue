@@ -2,6 +2,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useCurrencyStore } from '../store/currencyStore'
 import { useUserStore } from '../store/userStore'
+import CategoryManager from '../components/CategoryManager.vue'
 
 const currencyStore = useCurrencyStore()
 const userStore = useUserStore()
@@ -198,31 +199,62 @@ onMounted(() => {
         </v-card-title>
 
         <v-card-text class="p-6">
-          <!-- User Info Display -->
+          <!-- User Info Display with Profile Button -->
           <div class="mb-6 p-4 bg-gray-50 rounded-lg">
-            <div class="flex items-center gap-3">
-              <v-avatar color="primary" size="48">
-                <v-icon size="24">mdi-account</v-icon>
-              </v-avatar>
-              <div>
-                <p class="font-semibold text-gray-900">{{ userStore.displayName || 'Usuario' }}</p>
-                <p class="text-sm text-gray-600">{{ userStore.userEmail }}</p>
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-3">
+                <v-avatar color="primary" size="48">
+                  <v-icon size="24">mdi-account</v-icon>
+                </v-avatar>
+                <div>
+                  <p class="font-semibold text-gray-900">{{ userStore.displayName || 'Usuario' }}</p>
+                  <p class="text-sm text-gray-600">{{ userStore.userEmail }}</p>
+                </div>
               </div>
+              <v-btn
+                to="/perfil"
+                variant="outlined"
+                prepend-icon="mdi-account-cog"
+                size="small"
+              >
+                Configurar Perfil
+              </v-btn>
             </div>
           </div>
 
-          <!-- Future settings can go here -->
+          <!-- Theme Settings -->
           <div class="space-y-4">
             <v-divider class="my-4"></v-divider>
             
-            <div class="text-center py-8">
-              <v-icon size="48" color="gray" class="mb-4">mdi-cog-outline</v-icon>
-              <p class="text-gray-500">Más opciones de configuración próximamente...</p>
+            <!-- Dark Mode Option -->
+            <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+              <div class="flex items-center gap-3">
+                <div class="p-2 bg-gray-200 rounded-lg">
+                  <v-icon color="gray" size="24">mdi-theme-light-dark</v-icon>
+                </div>
+                <div>
+                  <p class="font-semibold text-gray-900">Modo Oscuro</p>
+                  <p class="text-sm text-gray-600">Actualmente: Modo Claro</p>
+                </div>
+              </div>
+              <v-switch
+                :model-value="false"
+                disabled
+                color="primary"
+                hide-details
+              />
             </div>
+            
+            <p class="text-xs text-gray-500 text-center">
+              * El modo oscuro estará disponible próximamente
+            </p>
           </div>
         </v-card-text>
       </v-card>
     </div>
+
+    <!-- Category Management -->
+    <CategoryManager class="mt-8" />
 
     <!-- Currency Conversion Info -->
     <v-card class="rounded-xl border-0 shadow-md mt-8">

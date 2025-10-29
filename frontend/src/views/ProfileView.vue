@@ -12,6 +12,7 @@ import {
   deleteAccount,
   logoutUser
 } from '../services/authService'
+import DeleteAccountDialog from '../components/DeleteAccountDialog.vue'
 
 const router = useRouter()
 const userStore = useUserStore()
@@ -32,6 +33,7 @@ const uploadingPhoto = ref(false)
 
 const error = ref('')
 const success = ref('')
+const showDeleteDialog = ref(false)
 
 const emailVerified = computed(() => userStore.user?.emailVerified)
 
@@ -52,11 +54,17 @@ async function saveName() {
 
 async function saveEmail() {
   clearMessages()
+  if (!emailCurrentPassword.value.trim()) {
+    error.value = 'Debes ingresar tu contraseña actual para cambiar el correo'
+    return
+  }
+  
   loadingEmail.value = true
   try {
     await changeUserEmail(emailInput.value.trim(), emailCurrentPassword.value)
     userStore.setUser(auth.currentUser)
-    success.value = 'Correo actualizado. Te enviamos un email de verificación.'
+    success.value = 'Correo actualizado correctamente. Te enviamos un email de verificación al nuevo correo.'
+    emailCurrentPassword.value = '' // Limpiar contraseña por seguridad
   } catch (e) {
     console.error(e)
     error.value = e?.message || 'Error al actualizar correo'
@@ -138,15 +146,22 @@ async function signOut() {
   router.push('/login')
 }
 
-async function confirmDeleteAccount() {
-  if (!confirm('¿Seguro que quieres eliminar tu cuenta? Esta acción no se puede deshacer.')) return
+function openDeleteDialog() {
+  showDeleteDialog.value = true
+}
+
+async function handleDeleteAccount(password) {
   try {
-    await deleteAccount(passCurrent.value)
+    await deleteAccount(password)
     userStore.clearUser()
-    router.push('/register')
+    success.value = 'Cuenta eliminada correctamente'
+    setTimeout(() => {
+      router.push('/register')
+    }, 2000)
   } catch (e) {
     console.error(e)
     error.value = e?.message || 'Error al eliminar la cuenta'
+    throw e // Re-throw para que el modal maneje el loading
   }
 }
 </script>
@@ -187,16 +202,80 @@ async function confirmDeleteAccount() {
       <v-card class="rounded-xl border-0 shadow-md">
         <v-card-title class="px-6 py-4">Correo electrónico</v-card-title>
         <v-card-text class="px-6 py-4">
-          <div class="flex items-center justify-between mb-2">
-            <div class="text-sm text-gray-600">Estado: <span :class="emailVerified ? 'text-green-600' : 'text-orange-600'">{{ emailVerified ? 'Verificado' : 'No verificado' }}</span></div>
-            <v-btn v-if="!emailVerified" variant="text" size="small" @click="sendVerificationEmail">Enviar verificación</v-btn>
+          <div class="flex items-center justify-between mb-4 p-3 rounded-lg" :class="emailVerified ? 'bg-green-50' : 'bg-orange-50'">
+            <div class="flex items-center gap-2">
+              <v-icon :color="emailVerified ? 'success' : 'warning'" size="20">
+                {{ emailVerified ? 'mdi-check-circle' : 'mdi-alert-circle' }}
+              </v-icon>
+              <span class="text-sm font-medium">
+                Estado: <span :class="emailVerified ? 'text-green-700' : 'text-orange-700'">
+                  {{ emailVerified ? 'Verificado' : 'No verificado' }}
+                </span>
+              </span>
+            </div>
+            <v-btn 
+              v-if="!emailVerified" 
+              variant="outlined" 
+              size="small" 
+              color="warning"
+              prepend-icon="mdi-email-send"
+              @click="sendVerificationEmail"
+            >
+              Reenviar verificación
+            </v-btn>
           </div>
-          <v-text-field v-model="emailInput" label="Nuevo correo" type="email" variant="outlined" density="comfortable" prepend-inner-icon="mdi-email" />
-          <v-text-field v-model="emailCurrentPassword" label="Contraseña actual (requerida para cambiar correo)" type="password" variant="outlined" density="comfortable" prepend-inner-icon="mdi-lock" />
-          <div class="mt-2">
-            <v-btn color="primary" :loading="loadingEmail" @click="saveEmail" prepend-icon="mdi-content-save">Guardar</v-btn>
+          
+          <div class="mb-3">
+            <label class="text-sm font-medium text-gray-700 mb-2 block">Correo actual</label>
+            <div class="p-3 bg-gray-50 rounded-lg text-sm text-gray-600">
+              {{ userStore.userEmail }}
+            </div>
           </div>
-          <div class="text-xs text-gray-500 mt-2">Por seguridad, algunas operaciones requieren autenticación reciente.</div>
+          
+          <v-text-field 
+            v-model="emailInput" 
+            label="Nuevo correo electrónico" 
+            type="email" 
+            variant="outlined" 
+            density="comfortable" 
+            prepend-inner-icon="mdi-email" 
+            class="mb-4"
+          />
+          
+          <v-text-field 
+            v-model="emailCurrentPassword" 
+            label="Contraseña actual (requerida)" 
+            type="password" 
+            variant="outlined" 
+            density="comfortable" 
+            prepend-inner-icon="mdi-lock" 
+            class="mb-4"
+            :rules="[v => !!v || 'La contraseña es requerida para cambiar el correo']"
+          />
+          
+          <div class="mt-4">
+            <v-btn 
+              color="primary" 
+              :loading="loadingEmail" 
+              @click="saveEmail" 
+              prepend-icon="mdi-content-save"
+              :disabled="!emailInput.trim() || !emailCurrentPassword.trim() || emailInput === userStore.userEmail"
+              size="large"
+            >
+              Actualizar Correo
+            </v-btn>
+          </div>
+          
+          <v-alert 
+            v-if="!emailVerified" 
+            type="info" 
+            variant="tonal" 
+            class="mt-4 text-sm"
+          >
+            <v-icon start>mdi-information</v-icon>
+            Después de cambiar tu correo, recibirás un email de verificación. 
+            Algunas funciones pueden estar limitadas hasta que verifiques tu nuevo correo.
+          </v-alert>
         </v-card-text>
       </v-card>
 
@@ -223,11 +302,37 @@ async function confirmDeleteAccount() {
       <v-card class="rounded-xl border-0 shadow-md">
         <v-card-title class="px-6 py-4">Opciones de cuenta</v-card-title>
         <v-card-text class="px-6 py-4">
-          <div class="flex gap-3">
-            <v-btn variant="outlined" prepend-icon="mdi-logout" @click="signOut">Cerrar sesión</v-btn>
-            <v-btn variant="outlined" color="error" prepend-icon="mdi-account-remove" @click="confirmDeleteAccount">Eliminar cuenta</v-btn>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <v-btn 
+              variant="outlined" 
+              prepend-icon="mdi-logout" 
+              @click="signOut"
+              size="large"
+              class="w-full"
+            >
+              Cerrar Sesión
+            </v-btn>
+            
+            <v-btn 
+              variant="outlined" 
+              color="error" 
+              prepend-icon="mdi-delete-forever" 
+              @click="openDeleteDialog"
+              size="large"
+              class="w-full"
+            >
+              Eliminar Cuenta
+            </v-btn>
           </div>
-          <div class="text-xs text-gray-500 mt-2">Eliminar la cuenta requiere autenticación reciente.</div>
+          
+          <v-alert 
+            type="warning" 
+            variant="tonal" 
+            class="mt-4 text-sm"
+          >
+            <v-icon start>mdi-shield-lock</v-icon>
+            Por tu seguridad, eliminar la cuenta requiere confirmar tu contraseña actual.
+          </v-alert>
         </v-card-text>
       </v-card>
     </div>
@@ -245,5 +350,11 @@ async function confirmDeleteAccount() {
         <v-btn variant="text" @click="success=''">Ok</v-btn>
       </template>
     </v-snackbar>
+
+    <!-- Delete Account Dialog -->
+    <DeleteAccountDialog 
+      v-model="showDeleteDialog" 
+      @confirm="handleDeleteAccount"
+    />
   </v-container>
 </template>
