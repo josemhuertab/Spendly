@@ -88,7 +88,7 @@ Convertirse en la aplicación de finanzas personales más reconocida por su simp
 
 ## 📱 Capturas de Pantalla
 
-> 📸 **Próximamente**: Las capturas de pantalla se agregarán una vez que la aplicación esté completamente desplegada. Mientras tanto, ¡prueba la demo live para ver Spendly en acción!
+
 
 ---
 
