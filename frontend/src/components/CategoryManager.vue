@@ -160,14 +160,14 @@ onMounted(async () => {
 <template>
   <v-card class="rounded-xl border-0 shadow-md">
     <v-card-title class="px-6 py-4 bg-gradient-to-r from-purple-50 to-pink-50">
-      <div class="flex items-center justify-between">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div class="flex items-center gap-3">
           <div class="p-2 bg-purple-100 rounded-lg">
             <v-icon color="purple" size="24">mdi-tag-multiple</v-icon>
           </div>
           <div>
             <h3 class="text-lg font-semibold text-gray-900">Gestión de Categorías</h3>
-            <p class="text-sm text-gray-600">Personaliza tus categorías y subcategorías</p>
+            <p class="text-sm text-gray-600 hidden sm:block">Personaliza tus categorías y subcategorías</p>
           </div>
         </div>
         <v-btn
@@ -176,8 +176,10 @@ onMounted(async () => {
           size="small"
           prepend-icon="mdi-restore"
           color="warning"
+          class="text-xs sm:text-sm whitespace-nowrap"
         >
-          Restaurar por defecto
+          <span class="hidden sm:inline">Restaurar por defecto</span>
+          <span class="sm:hidden">Restaurar</span>
         </v-btn>
       </div>
     </v-card-title>
