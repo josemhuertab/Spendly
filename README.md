@@ -2,12 +2,14 @@
 
 <div align="center">
 
-![Spendly Logo](frontend/src/components/icons/Logo.png)
+<p align="center">
+  <img src="frontend/src/components/icons/Logo.png" alt="Spendly Logo" width="180">
+</p>
 
 **La aplicación web más intuitiva para gestionar tus finanzas personales**
 
-[![Demo Live](https://img.shields.io/badge/🚀_Demo_Live-Probar_Ahora-4CAF50?style=for-the-badge)](https://tu-usuario.github.io/spendly)
-[![Versión](https://img.shields.io/badge/Versión-1.0.0-blue?style=for-the-badge)](https://github.com/tu-usuario/spendly)
+[![Demo Live](https://img.shields.io/badge/🚀_Demo_Live-Probar_Ahora-4CAF50?style=for-the-badge)](https://josemhuertab.github.io/spendly)
+[![Versión](https://img.shields.io/badge/Versión-1.0.0-blue?style=for-the-badge)](https://github.com/josemhuertab/spendly)
 [![Licencia](https://img.shields.io/badge/Licencia-Propietaria-red?style=for-the-badge)](#licencia)
 
 [🎯 Ver Demo](#demo) • [✨ Características](#características) • [📱 Capturas](#capturas-de-pantalla) • [🛠️ Tecnologías](#tecnologías) • [📞 Contacto](#contacto)
@@ -117,7 +119,7 @@ Spendly está construido con las tecnologías más modernas y confiables:
 
 ### 🌐 Prueba Spendly Ahora
 
-**[👉 Acceder a la Demo Live](https://tu-usuario.github.io/spendly)**
+**[👉 Acceder a la Demo Live](https://josemhuertab.github.io/spendly)**
 
 #### 🔐 Credenciales de Prueba
 ```
@@ -165,8 +167,6 @@ A diferencia de aplicaciones genéricas como Fintonic, Wallet o Monefy, Spendly:
 
 ---
 
-## 🔧 Instalación y Configuración
-
 > **⚠️ Nota Importante**: Este es un proyecto propietario. El código fuente no está disponible para clonación o uso comercial. Para acceso al código o licencias comerciales, por favor [contacta al desarrollador](#contacto).
 
 ### 🌐 Acceso a la Aplicación
@@ -188,58 +188,13 @@ A diferencia de otras aplicaciones que requieren acceso a tus cuentas bancarias,
 
 ---
 
-## 🗺️ Roadmap
-
-### 🚀 Próximas Características
-
-#### Q1 2025
-- [ ] 📊 **Reportes Avanzados** - Exportación a PDF y Excel
-- [ ] 🔔 **Notificaciones Push** - Recordatorios y alertas
-- [ ] 📱 **App Móvil Nativa** - iOS y Android
-- [ ] 🤖 **IA Financiera** - Recomendaciones inteligentes
-
-#### Q2 2025
-- [ ] 👥 **Cuentas Familiares** - Gestión colaborativa
-- [ ] 🏦 **Integración Bancaria** - Sincronización automática
-- [ ] 📈 **Inversiones** - Seguimiento de portafolios
-- [ ] 🎯 **Presupuestos Inteligentes** - Planificación automática
-
-#### Q3 2025
-- [ ] 🌍 **Más Idiomas** - Soporte multiidioma
-- [ ] 💰 **Criptomonedas** - Gestión de activos digitales
-- [ ] 📊 **Business Intelligence** - Análisis avanzados
-- [ ] 🔗 **API Pública** - Integraciones de terceros
-
----
-
-## 🤝 Contribuciones
-
-Aunque el código fuente no está disponible públicamente, valoramos tu feedback y sugerencias:
-
-### 💡 Cómo Contribuir
-- **🐛 Reportar Bugs**: Usa los [Issues](https://github.com/tu-usuario/spendly/issues)
-- **💭 Sugerir Características**: Comparte tus ideas
-- **📝 Mejorar Documentación**: Ayuda con traducciones
-- **🧪 Beta Testing**: Únete al programa de pruebas
-
-### 🏆 Reconocimientos
-Agradecemos a todos los beta testers y usuarios que han contribuido con feedback valioso para mejorar Spendly.
-
----
-
 ## 📞 Contacto
+(Para licencias empresariales, personalizaciones o colaboraciones)
 
-### 👨‍💻 Desarrollador
-**[Tu Nombre]**
-- 📧 Email: [tu-email@ejemplo.com](mailto:tu-email@ejemplo.com)
-- 💼 LinkedIn: [linkedin.com/in/tu-perfil](https://linkedin.com/in/tu-perfil)
-- 🐙 GitHub: [@tu-usuario](https://github.com/tu-usuario)
-- 🌐 Portfolio: [tu-portfolio.com](https://tu-portfolio.com)
-
-### 💼 Consultas Comerciales
-Para licencias empresariales, personalizaciones o colaboraciones:
-- 📧 Business: [business@spendly.com](mailto:business@spendly.com)
-- 📱 WhatsApp: [+1234567890](https://wa.me/1234567890)
+**José Huerta**
+- 📧 Email: [josem.huertabl@gmail.com](mailto:josem.huertab@gmail.com)
+- 💼 LinkedIn: [linkedin.com/in/josemhuertab](https://linkedin.com/in/josemhuertab)
+- 🐙 GitHub: [@josemhuertab](https://github.com/josemhuertab)
 
 ---
 
@@ -247,7 +202,7 @@ Para licencias empresariales, personalizaciones o colaboraciones:
 
 ### 📋 Licencia Propietaria
 
-**Copyright © 2024 [Tu Nombre]. Todos los derechos reservados.**
+**Copyright © 2024 [José Huerta]. Todos los derechos reservados.**
 
 #### ✅ **Permitido:**
 - ✅ Usar la aplicación web para fines personales
@@ -281,10 +236,10 @@ Si Spendly te ha sido útil, considera:
 
 **¡Toma control de tus finanzas hoy mismo!**
 
-[![Probar Spendly](https://img.shields.io/badge/🚀_Probar_Spendly-Gratis-4CAF50?style=for-the-badge&logo=rocket)](https://tu-usuario.github.io/spendly)
+[![Probar Spendly](https://img.shields.io/badge/🚀_Probar_Spendly-Gratis-4CAF50?style=for-the-badge)](https://josemhuertab.github.io/spendly)
 
 ---
 
-*Hecho con ❤️ por [Tu Nombre] | © 2024 Spendly - Todos los derechos reservados*
+*Hecho por José Huerta | © 2025 Spendly - Todos los derechos reservados*
 
 </div>
