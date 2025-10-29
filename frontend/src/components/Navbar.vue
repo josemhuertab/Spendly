@@ -30,7 +30,7 @@ const menuItems = [
 </script>
 
 <template>
-  <v-app-bar color="primary" density="comfortable">
+  <v-app-bar color="primary" density="comfortable" class="navbar-theme">
     <template v-if="mobile">
       <v-app-bar-nav-icon icon="mdi-menu" @click="emit('toggle-drawer')" />
       <v-app-bar-title class="text-center">Spendly</v-app-bar-title>
@@ -81,5 +81,13 @@ const menuItems = [
 
 .nav-logo:hover {
   opacity: 0.8;
+}
+
+.navbar-theme {
+  background: linear-gradient(90deg, #379237 0%, #54B435 100%) !important;
+}
+
+:global(.dark-theme) .navbar-theme {
+  background: linear-gradient(90deg, #047857 0%, #059669 100%) !important;
 }
 </style>

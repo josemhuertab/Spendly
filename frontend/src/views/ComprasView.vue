@@ -346,12 +346,12 @@ onUnmounted(() => transactionStore.stopRealtime())
 </script>
 
 <template>
-  <v-container fluid class="pa-6">
+  <v-container fluid class="pa-6 theme-bg min-h-screen">
     <div class="mb-8">
       <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
         <div>
-          <h1 class="text-3xl font-bold text-gray-900 mb-2">Compras con Tarjeta / Cuotas</h1>
-          <p class="text-gray-600">Registra tus compras con tarjeta de crédito y controla las cuotas pagadas.</p>
+          <h1 class="text-3xl font-bold theme-text-primary mb-2">Compras con Tarjeta / Cuotas</h1>
+          <p class="theme-text-secondary">Registra tus compras con tarjeta de crédito y controla las cuotas pagadas.</p>
         </div>
         <div class="flex items-center gap-3">
           <v-btn
@@ -381,7 +381,7 @@ onUnmounted(() => transactionStore.stopRealtime())
       <!-- Título del período actual -->
       <div class="mb-4">
         <div class="flex items-center gap-3">
-          <h2 class="text-lg font-semibold text-gray-900">{{ filterTitle }}</h2>
+          <h2 class="text-lg font-semibold theme-text-primary">{{ filterTitle }}</h2>
           <v-chip
             v-if="hasActiveFilters"
             color="primary"

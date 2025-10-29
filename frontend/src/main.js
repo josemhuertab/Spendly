@@ -1,5 +1,6 @@
 import './assets/tailwind.css'
 import './assets/main.css'
+import './assets/theme.css'
 
 import { createApp } from 'vue'
 import App from './App.vue'
@@ -28,6 +29,23 @@ const vuetify = createVuetify({
           background: '#FFFFFF',
           surface: '#FFFFFF',
           success: '#54B435',
+          error: '#ef4444',
+          warning: '#f59e0b',
+          info: '#3b82f6',
+        },
+      },
+      spendlyDark: {
+        dark: true,
+        colors: {
+          primary: '#10b981',
+          secondary: '#059669',
+          accent: '#22c55e',
+          background: '#0f172a',
+          surface: '#1e293b',
+          success: '#22c55e',
+          error: '#f87171',
+          warning: '#fbbf24',
+          info: '#60a5fa',
         },
       },
     },

@@ -224,13 +224,13 @@ onUnmounted(() => savingsStore.stopRealtime())
 </script>
 
 <template>
-  <v-container fluid class="pa-6">
+  <v-container fluid class="pa-6 theme-bg min-h-screen">
     <!-- Header -->
     <div class="mb-8">
       <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
         <div>
-          <h1 class="text-3xl font-bold text-gray-900 mb-2">Ahorros</h1>
-          <p class="text-gray-600">Registra tus ahorros mensuales y visualiza tu progreso</p>
+          <h1 class="text-3xl font-bold theme-text-primary mb-2">Ahorros</h1>
+          <p class="theme-text-secondary">Registra tus ahorros mensuales y visualiza tu progreso</p>
           <div class="mt-2">
             <v-chip
               color="primary"

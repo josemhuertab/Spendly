@@ -2,10 +2,12 @@
 import { ref, computed, onMounted } from 'vue'
 import { useCurrencyStore } from '../store/currencyStore'
 import { useUserStore } from '../store/userStore'
+import { useThemeStore } from '../store/themeStore'
 import CategoryManager from '../components/CategoryManager.vue'
 
 const currencyStore = useCurrencyStore()
 const userStore = useUserStore()
+const themeStore = useThemeStore()
 
 // Local state
 const selectedCurrency = ref(currencyStore.currentCurrency)
@@ -61,11 +63,11 @@ onMounted(() => {
 </script>
 
 <template>
-  <v-container fluid class="pa-6">
+  <v-container fluid class="pa-6 theme-bg min-h-screen">
     <!-- Header -->
     <div class="mb-8">
-      <h1 class="text-3xl font-bold text-gray-900 mb-2">Configuración</h1>
-      <p class="text-gray-600">Personaliza tu experiencia en Spendly</p>
+      <h1 class="text-3xl font-bold theme-text-primary mb-2">Configuración</h1>
+      <p class="theme-text-secondary">Personaliza tu experiencia en Spendly</p>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -230,23 +232,27 @@ onMounted(() => {
             <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
               <div class="flex items-center gap-3">
                 <div class="p-2 bg-gray-200 rounded-lg">
-                  <v-icon color="gray" size="24">mdi-theme-light-dark</v-icon>
+                  <v-icon :color="themeStore.isDark ? 'primary' : 'gray'" size="24">
+                    {{ themeStore.isDark ? 'mdi-weather-night' : 'mdi-weather-sunny' }}
+                  </v-icon>
                 </div>
                 <div>
                   <p class="font-semibold text-gray-900">Modo Oscuro</p>
-                  <p class="text-sm text-gray-600">Actualmente: Modo Claro</p>
+                  <p class="text-sm text-gray-600">
+                    Actualmente: {{ themeStore.isDark ? 'Modo Oscuro' : 'Modo Claro' }}
+                  </p>
                 </div>
               </div>
               <v-switch
-                :model-value="false"
-                disabled
+                :model-value="themeStore.isDark"
+                @update:model-value="themeStore.toggleTheme"
                 color="primary"
                 hide-details
               />
             </div>
             
             <p class="text-xs text-gray-500 text-center">
-              * El modo oscuro estará disponible próximamente
+              El tema se guarda automáticamente y se aplica en toda la aplicación
             </p>
           </div>
         </v-card-text>
