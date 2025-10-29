@@ -138,7 +138,6 @@ export async function getSavingsSummary(userId, year) {
     const m = Number(s.month)
     if (m >= 1 && m <= 12) byMonth[m - 1] += Number(s.amount || 0)
   })
-  // Ahorros totales (todos los años)
   const allSavings = await getSavings(userId, null)
   const totalAll = allSavings.reduce((sum, s) => sum + Number(s.amount || 0), 0)
 

@@ -7,21 +7,23 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# Dependencies
 node_modules
-.DS_Store
+
+# Build outputs
 dist
 dist-ssr
 coverage
+
+# Environment variables (keep .env for GitHub Pages deployment)
 *.local
 
+# Testing
 /cypress/videos/
 /cypress/screenshots/
 
 # Editor directories and files
-.vscode/*
-.vscode
-!.vscode/extensions.json
-!.vscode/settings.json
+.vscode/
 .idea
 *.suo
 *.ntvs*
@@ -29,4 +31,18 @@ coverage
 *.sln
 *.sw?
 
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Build info
 *.tsbuildinfo
+
+# Firebase
+.firebase/
+firebase-debug.log

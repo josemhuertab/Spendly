@@ -151,8 +151,7 @@ const summary = computed(() => {
   
   totals.saldoPendiente = Math.max(0, totals.totalCompras - totals.totalPagado)
   
-  // Calcular cuotas pendientes como funciona realmente una tarjeta de crédito
-  // (el máximo de cuotas pendientes entre todos los productos)
+  // Calcular cuotas pendientes máximas
   let maxCuotasPendientes = 0
   creditPurchases.value.forEach(t => {
     const installments = Number(t.installments || 1)
@@ -245,7 +244,6 @@ function onSaved() {
 }
 
 async function payAllPendingInstallments() {
-  // Simplificar: pagar una cuota a todos los productos que no estén completamente pagados
   const purchasesToUpdate = []
   
   creditPurchases.value.forEach(purchase => {

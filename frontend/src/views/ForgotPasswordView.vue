@@ -8,8 +8,7 @@ import LogoUrl from '../components/icons/Logo.png?url'
 const router = useRouter()
 const route = useRoute()
 
-// Estados del formulario
-const currentStep = ref(1) // 1: email, 2: código enviado, 3: nueva contraseña, 4: éxito
+const currentStep = ref(1)
 const email = ref('')
 const oobCode = ref(route.query.oobCode || '') // Código de la URL si viene del email
 const newPassword = ref('')
@@ -18,7 +17,6 @@ const loading = ref(false)
 const error = ref('')
 const successMessage = ref('')
 
-// Validación de contraseña
 const passwordStrength = ref(0)
 
 function checkPasswordStrength(password) {
@@ -47,12 +45,10 @@ function getStrengthText() {
   return 'Fuerte'
 }
 
-// Si viene con código en la URL, ir directamente al paso 3
 if (oobCode.value) {
   currentStep.value = 3
 }
 
-// Paso 1: Enviar email de recuperación
 async function sendResetEmail() {
   error.value = ''
   loading.value = true
@@ -69,7 +65,6 @@ async function sendResetEmail() {
   }
 }
 
-// Paso 3: Restablecer contraseña con código
 async function resetUserPassword() {
   error.value = ''
   

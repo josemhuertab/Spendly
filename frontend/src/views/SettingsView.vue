@@ -9,12 +9,10 @@ const currencyStore = useCurrencyStore()
 const userStore = useUserStore()
 const themeStore = useThemeStore()
 
-// Local state
 const selectedCurrency = ref(currencyStore.currentCurrency)
 const showExchangeRates = ref(false)
 const isUpdatingRates = ref(false)
 
-// Computed
 const exchangeRateInfo = computed(() => currencyStore.getExchangeRateInfo())
 
 const lastUpdatedFormatted = computed(() => {
@@ -27,16 +25,13 @@ const lastUpdatedFormatted = computed(() => {
   }).format(date)
 })
 
-// Methods
 function handleCurrencyChange() {
   currencyStore.setCurrency(selectedCurrency.value)
-  // Show success message
   showSuccessMessage()
 }
 
 function showSuccessMessage() {
-  // You can implement a toast/snackbar here
-  console.log(`Moneda cambiada a ${currencyStore.currentCurrencyInfo.name}`)
+  // Success feedback is handled by the currency store
 }
 
 async function updateExchangeRates() {
@@ -56,7 +51,6 @@ function formatExchangeRate(rate, currencyCode) {
   })
 }
 
-// Lifecycle
 onMounted(() => {
   selectedCurrency.value = currencyStore.currentCurrency
 })

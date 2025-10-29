@@ -65,7 +65,6 @@ export const useCategoryStore = defineStore('categories', {
     async loadUserCategories() {
       const userStore = useUserStore()
       if (!userStore.userId) {
-        console.log('No user ID found, skipping category load')
         return
       }
 
@@ -98,7 +97,6 @@ export const useCategoryStore = defineStore('categories', {
     async saveUserCategories() {
       const userStore = useUserStore()
       if (!userStore.userId) {
-        console.log('No user ID found, skipping category save')
         return
       }
 

@@ -13,7 +13,6 @@ const currencyStore = useCurrencyStore()
 const savingsStore = useSavingsStore()
 const themeStore = useThemeStore()
 
-// Helpers
 function toDisplay(amount, fromCurrency = currencyStore.currentCurrency) {
   const converted = currencyStore.convertAmount(Number(amount || 0), fromCurrency, currencyStore.currentCurrency)
   return converted
@@ -22,17 +21,14 @@ function formatAmount(amount) {
   return currencyStore.formatAmount(toDisplay(amount))
 }
 
-// Summary
 const summary = computed(() => transactionStore.summary)
 const formattedIngresos = computed(() => currencyStore.formatAmount(Number(summary.value.totalIngresos || 0)))
 const formattedGastos = computed(() => currencyStore.formatAmount(Number(summary.value.totalGastos || 0)))
 const formattedBalance = computed(() => currencyStore.formatAmount(Number(summary.value.balance || 0)))
 
-// Base data
 const transactions = computed(() => transactionStore.transactions)
 const monthLabels = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic']
 
-// Monthly totals (expenses)
 const monthlyExpenses = computed(() => {
   const totals = Array.from({ length: 12 }, () => 0)
   transactions.value.forEach(t => {
@@ -43,7 +39,6 @@ const monthlyExpenses = computed(() => {
   return totals
 })
 
-// Incomes vs Expenses per month
 const monthlyIncomes = computed(() => {
   const totals = Array.from({ length: 12 }, () => 0)
   transactions.value.forEach(t => {
@@ -54,7 +49,6 @@ const monthlyIncomes = computed(() => {
   return totals
 })
 
-// Category distribution (expenses)
 const categoryDistribution = computed(() => {
   const map = new Map()
   transactions.value.forEach(t => {
@@ -67,7 +61,6 @@ const categoryDistribution = computed(() => {
   return { labels, data }
 })
 
-// Scatter of expenses by date
 const expenseScatter = computed(() => {
   const points = []
   transactions.value.forEach(t => {
@@ -78,7 +71,6 @@ const expenseScatter = computed(() => {
   return points
 })
 
-// Chart data
 const lineData = computed(() => ({
   labels: monthLabels,
   datasets: [{
@@ -124,7 +116,6 @@ const scatterData = computed(() => ({
   }]
 }))
 
-// Dynamic chart options based on theme
 const chartColors = computed(() => {
   if (themeStore.isDark) {
     return {
@@ -197,13 +188,12 @@ onMounted(async () => {
   await savingsStore.loadSavings(savingsStore.filterYear)
   await savingsStore.loadSummary()
   await savingsStore.loadAnnualGoal()
-  // Recalcular totales si cambia la moneda
+  
   const { watch } = await import('vue')
   watch(() => currencyStore.currentCurrency, () => {
     transactionStore.loadSummary()
     savingsStore.loadSummary()
   })
-  // Recargar meta anual si cambia el año filtrado
   watch(() => savingsStore.filterYear, () => {
     savingsStore.loadAnnualGoal()
   })

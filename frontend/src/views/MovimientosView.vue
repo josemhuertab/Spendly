@@ -11,21 +11,17 @@ const transactionStore = useTransactionStore()
 const userStore = useUserStore()
 const currencyStore = useCurrencyStore()
 
-// Local state
 const showForm = ref(false)
 const editingTransaction = ref(null)
 const isEditing = ref(false)
 const activeTab = ref('all')
 const showAdvancedFilters = ref(false)
 
-// Summary period filter
-const summaryPeriod = ref('current') // 'all', 'current', 'currentYear', 'custom'
+const summaryPeriod = ref('current')
 const summaryYear = ref(new Date().getFullYear())
 const summaryMonth = ref(new Date().getMonth() + 1)
 const summaryYearTo = ref(new Date().getFullYear())
 const summaryMonthTo = ref(new Date().getMonth() + 1)
-
-// Advanced filters
 const selectedYear = ref(null)
 const selectedMonth = ref(null)
 const selectedYearTo = ref(null)
@@ -37,13 +33,11 @@ const dateTo = ref('')
 const amountFrom = ref(null)
 const amountTo = ref(null)
 
-// Computed properties
 const summary = computed(() => {
   if (summaryPeriod.value === 'all') {
     return transactionStore.summary
   }
   
-  // Calculate summary for specific period
   let filteredTransactions = transactionStore.transactions
   
   if (summaryPeriod.value === 'current') {
@@ -68,7 +62,6 @@ const summary = computed(() => {
       const transactionYear = date.getFullYear()
       const transactionMonth = date.getMonth() + 1
       
-      // Create date objects for comparison
       const transactionDate = new Date(transactionYear, transactionMonth - 1, 1)
       const fromDate = new Date(summaryYear.value, (summaryMonth.value || 1) - 1, 1)
       const toDate = new Date(summaryYearTo.value, (summaryMonthTo.value || 12) - 1, 1)
@@ -77,7 +70,6 @@ const summary = computed(() => {
     })
   }
   
-  // Calculate totals
   const totals = {
     totalIngresos: 0,
     totalGastos: 0,
@@ -117,7 +109,6 @@ const formattedGastos = computed(() => {
   return currencyStore.formatAmount(Number(summary.value.totalGastos || 0))
 })
 
-// Advanced filters computed properties
 const availableYears = computed(() => {
   const years = new Set()
   transactionStore.transactions.forEach(t => {
@@ -208,7 +199,6 @@ const summaryTitle = computed(() => {
   return 'Resumen'
 })
 
-// Methods
 function openNewTransactionForm() {
   editingTransaction.value = null
   isEditing.value = false
@@ -225,12 +215,11 @@ function onTransactionSaved() {
   showForm.value = false
   editingTransaction.value = null
   isEditing.value = false
-  // Refresh data
   transactionStore.loadTransactions()
 }
 
 function onTransactionDeleted() {
-  // Data is already updated by the store
+  // Data is updated by the store
 }
 
 function onFormCancelled() {
@@ -248,7 +237,6 @@ function clearAllFilters() {
   transactionStore.clearFilters()
   activeTab.value = 'all'
   
-  // Clear advanced filters
   selectedYear.value = null
   selectedMonth.value = null
   selectedYearTo.value = null
@@ -289,7 +277,6 @@ function applyPaymentMethodFilter() {
 
 function applyCustomDateRange() {
   if (dateFrom.value || dateTo.value) {
-    // Clear year/month filters when using custom range
     selectedYear.value = null
     selectedMonth.value = null
     selectedYearTo.value = null
@@ -305,7 +292,6 @@ function applyAmountFilter() {
   transactionStore.setFilter('amountTo', amountTo.value)
 }
 
-// Sync summary period with main filters when using year/month
 function syncFiltersWithSummary() {
   if (summaryPeriod.value === 'custom' && summaryYear.value) {
     selectedYear.value = summaryYear.value
@@ -316,7 +302,6 @@ function syncFiltersWithSummary() {
   }
 }
 
-// Reset only the summary to current month (not the transaction filters)
 function resetSummaryToCurrentMonth() {
   summaryPeriod.value = 'current'
   summaryYear.value = new Date().getFullYear()
@@ -325,28 +310,21 @@ function resetSummaryToCurrentMonth() {
   summaryMonthTo.value = new Date().getMonth() + 1
 }
 
-// Lifecycle
 onMounted(async () => {
-  // Asegurar usuario
   if (!userStore.initialized) {
     await userStore.init()
   }
   if (userStore.isAuthenticated) {
-    // Suscripción en tiempo real
     transactionStore.startRealtime()
-    // Carga inicial (por si ya hay datos)
     await transactionStore.loadTransactions()
   }
-  // Recalcular resumen si cambia la moneda
+  
   watch(() => currencyStore.currentCurrency, () => {
     transactionStore.loadSummary()
   })
   
-  // Watch for summary period changes to optionally sync with main filters
   watch([summaryPeriod, summaryYear, summaryMonth], () => {
-    // Optional: Auto-sync main filters when summary period changes
-    // Uncomment if you want automatic synchronization
-    // syncFiltersWithSummary()
+    // Auto-sync can be enabled here if needed
   })
 })
 

@@ -18,9 +18,9 @@ export const useSavingsStore = defineStore('savings', {
     loading: false,
     error: null,
     filterYear: new Date().getFullYear(),
-    filterMonth: null, // 1-12 o null para todos (null = todos los meses del año)
-    filterYearTo: null, // Para rangos de años
-    filterMonthTo: null, // Para rangos de meses
+    filterMonth: null,
+    filterYearTo: null,
+    filterMonthTo: null,
     summary: {
       totalAll: 0,
       totalYear: 0,
@@ -59,7 +59,7 @@ export const useSavingsStore = defineStore('savings', {
           } else if (year === toYear) {
             return month <= toMonth
           } else {
-            return true // Años intermedios, todos los meses
+            return true
           }
         }
         
@@ -267,7 +267,7 @@ export const useSavingsStore = defineStore('savings', {
     
     clearFilters() {
       this.filterYear = new Date().getFullYear()
-      this.filterMonth = null // null = todos los meses del año actual
+      this.filterMonth = null
       this.filterYearTo = null
       this.filterMonthTo = null
       

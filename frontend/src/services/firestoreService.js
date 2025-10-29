@@ -277,32 +277,20 @@ export async function getTransactionsSummary(userId) {
  */
 export async function saveUserCategories(userId, categoriesData) {
   try {
-    console.log('saveUserCategories called with:', { userId, categoriesData })
     const docRef = doc(db, 'users', userId, 'settings', 'categories')
-    console.log('Document reference created:', docRef.path)
-    
-    // Verificar si el documento existe primero
-    console.log('Checking if document exists...')
     const docSnap = await getDoc(docRef)
-    console.log('Document exists:', docSnap.exists())
     
     if (docSnap.exists()) {
-      // El documento existe, actualizarlo
-      console.log('Updating existing document...')
       await updateDoc(docRef, {
         ...categoriesData,
         updatedAt: serverTimestamp()
       })
-      console.log('Document updated successfully')
     } else {
-      // El documento no existe, crearlo
-      console.log('Creating new document...')
       await setDoc(docRef, {
         ...categoriesData,
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp()
       })
-      console.log('Document created successfully')
     }
   } catch (error) {
     console.error('Error saving user categories:', error)
