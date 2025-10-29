@@ -1,0 +1,364 @@
+/* Tema Global - Variables CSS */
+:root {
+  /* Colores base */
+  --color-primary: #059669;
+  --color-primary-light: #d1fae5;
+  --color-primary-dark: #047857;
+  
+  /* Transiciones suaves */
+  --transition-theme: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Tema Claro */
+.light-theme {
+  --color-background: #ffffff;
+  --color-surface: #ffffff;
+  --color-card-background: #ffffff;
+  --color-text-primary: #1f2937;
+  --color-text-secondary: #6b7280;
+  --color-text-muted: #9ca3af;
+  --color-border: #e5e7eb;
+  --color-border-light: #f3f4f6;
+  --color-success: #10b981;
+  --color-error: #ef4444;
+  --color-warning: #f59e0b;
+  --color-info: #3b82f6;
+}
+
+/* Tema Oscuro */
+.dark-theme {
+  --color-background: #0f172a;
+  --color-surface: #1e293b;
+  --color-card-background: #334155;
+  --color-text-primary: #f1f5f9;
+  --color-text-secondary: #cbd5e1;
+  --color-text-muted: #94a3b8;
+  --color-border: #475569;
+  --color-border-light: #64748b;
+  --color-success: #22c55e;
+  --color-error: #f87171;
+  --color-warning: #fbbf24;
+  --color-info: #60a5fa;
+  --color-primary: #10b981;
+  --color-primary-light: #064e3b;
+  --color-primary-dark: #059669;
+}
+
+/* Estilos base del body */
+body {
+  background-color: var(--color-background);
+  color: var(--color-text-primary);
+  transition: var(--transition-theme);
+}
+
+/* Clases utilitarias para temas */
+.theme-bg {
+  background-color: var(--color-background);
+  transition: var(--transition-theme);
+}
+
+.theme-surface {
+  background-color: var(--color-surface);
+  transition: var(--transition-theme);
+}
+
+.theme-card {
+  background-color: var(--color-card-background);
+  transition: var(--transition-theme);
+}
+
+.theme-text-primary {
+  color: var(--color-text-primary);
+  transition: var(--transition-theme);
+}
+
+.theme-text-secondary {
+  color: var(--color-text-secondary);
+  transition: var(--transition-theme);
+}
+
+.theme-text-muted {
+  color: var(--color-text-muted);
+  transition: var(--transition-theme);
+}
+
+.theme-border {
+  border-color: var(--color-border);
+  transition: var(--transition-theme);
+}
+
+.theme-border-light {
+  border-color: var(--color-border-light);
+  transition: var(--transition-theme);
+}
+
+/* Estilos específicos para modo oscuro */
+.dark-theme .v-application {
+  background: var(--color-background) !important;
+}
+
+.dark-theme .v-card {
+  background-color: var(--color-card-background) !important;
+  color: var(--color-text-primary) !important;
+}
+
+.dark-theme .v-sheet {
+  background-color: var(--color-surface) !important;
+  color: var(--color-text-primary) !important;
+}
+
+.dark-theme .v-data-table {
+  background-color: var(--color-card-background) !important;
+  color: var(--color-text-primary) !important;
+}
+
+.dark-theme .v-data-table .v-data-table__wrapper {
+  background-color: var(--color-card-background) !important;
+}
+
+.dark-theme .v-data-table-header {
+  background-color: var(--color-surface) !important;
+}
+
+.dark-theme .v-data-table-header th {
+  color: var(--color-text-primary) !important;
+  border-bottom-color: var(--color-border) !important;
+}
+
+.dark-theme .v-data-table__td {
+  color: var(--color-text-primary) !important;
+  border-bottom-color: var(--color-border-light) !important;
+}
+
+.dark-theme .v-data-table__tr:hover {
+  background-color: var(--color-surface) !important;
+}
+
+/* Campos de texto y formularios */
+.dark-theme .v-field {
+  background-color: var(--color-surface) !important;
+  color: var(--color-text-primary) !important;
+}
+
+.dark-theme .v-field__input {
+  color: var(--color-text-primary) !important;
+}
+
+.dark-theme .v-field__outline {
+  color: var(--color-border) !important;
+}
+
+.dark-theme .v-label {
+  color: var(--color-text-secondary) !important;
+}
+
+/* Botones */
+.dark-theme .v-btn--variant-outlined {
+  border-color: var(--color-border) !important;
+  color: var(--color-text-primary) !important;
+}
+
+.dark-theme .v-btn--variant-text {
+  color: var(--color-text-primary) !important;
+}
+
+/* Diálogos y overlays */
+.dark-theme .v-overlay__scrim {
+  background-color: rgba(15, 23, 42, 0.8) !important;
+}
+
+.dark-theme .v-dialog .v-card {
+  background-color: var(--color-card-background) !important;
+}
+
+/* Snackbars */
+.dark-theme .v-snackbar .v-sheet {
+  background-color: var(--color-surface) !important;
+  color: var(--color-text-primary) !important;
+}
+
+/* Chips */
+.dark-theme .v-chip {
+  background-color: var(--color-surface) !important;
+  color: var(--color-text-primary) !important;
+}
+
+.dark-theme .v-chip--variant-outlined {
+  border-color: var(--color-border) !important;
+}
+
+/* Tabs */
+.dark-theme .v-tabs {
+  background-color: var(--color-surface) !important;
+}
+
+.dark-theme .v-tab {
+  color: var(--color-text-secondary) !important;
+}
+
+.dark-theme .v-tab--selected {
+  color: var(--color-primary) !important;
+}
+
+/* Listas */
+.dark-theme .v-list {
+  background-color: var(--color-surface) !important;
+}
+
+.dark-theme .v-list-item {
+  color: var(--color-text-primary) !important;
+}
+
+.dark-theme .v-list-item:hover {
+  background-color: var(--color-card-background) !important;
+}
+
+/* Divisores */
+.dark-theme .v-divider {
+  border-color: var(--color-border) !important;
+}
+
+/* Alertas */
+.dark-theme .v-alert {
+  background-color: var(--color-surface) !important;
+  color: var(--color-text-primary) !important;
+}
+
+/* Progress */
+.dark-theme .v-progress-circular {
+  color: var(--color-primary) !important;
+}
+
+/* Selectores */
+.dark-theme .v-select .v-field {
+  background-color: var(--color-surface) !important;
+}
+
+.dark-theme .v-menu .v-list {
+  background-color: var(--color-card-background) !important;
+}
+
+/* Expansión de transiciones */
+.dark-theme .v-expansion-panel {
+  background-color: var(--color-card-background) !important;
+}
+
+.dark-theme .v-expansion-panel-title {
+  color: var(--color-text-primary) !important;
+}
+
+/* Tooltips */
+.dark-theme .v-tooltip .v-overlay__content {
+  background-color: var(--color-surface) !important;
+  color: var(--color-text-primary) !important;
+}
+
+/* Scrollbars personalizados para modo oscuro */
+.dark-theme ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.dark-theme ::-webkit-scrollbar-track {
+  background: var(--color-surface);
+}
+
+.dark-theme ::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 4px;
+}
+
+.dark-theme ::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-muted);
+}
+
+/* Animaciones suaves para cambios de tema */
+* {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Clases específicas para componentes personalizados */
+.dark-theme .transaction-form,
+.dark-theme .transaction-table,
+.dark-theme .monthly-summary,
+.dark-theme .sidebar {
+  background-color: var(--color-card-background) !important;
+  color: var(--color-text-primary) !important;
+}
+
+/* Gradientes para modo oscuro */
+.dark-theme .bg-gradient-to-r.from-green-600.to-green-700 {
+  background: linear-gradient(to right, var(--color-primary), var(--color-primary-dark)) !important;
+}
+
+.dark-theme .bg-gradient-to-r.from-emerald-600.to-emerald-700 {
+  background: linear-gradient(to right, #059669, #047857) !important;
+}
+
+.dark-theme .bg-gradient-to-r.from-teal-600.to-teal-700 {
+  background: linear-gradient(to right, #0d9488, #0f766e) !important;
+}
+
+.dark-theme .bg-gradient-to-r.from-blue-50.to-indigo-50 {
+  background: linear-gradient(to right, var(--color-surface), var(--color-card-background)) !important;
+}
+
+.dark-theme .bg-gradient-to-r.from-green-50.to-emerald-50 {
+  background: linear-gradient(to right, var(--color-surface), var(--color-card-background)) !important;
+}
+
+.dark-theme .bg-gradient-to-r.from-purple-50.to-pink-50 {
+  background: linear-gradient(to right, var(--color-surface), var(--color-card-background)) !important;
+}
+
+/* Colores de fondo específicos */
+.dark-theme .bg-gray-50 {
+  background-color: var(--color-surface) !important;
+}
+
+.dark-theme .bg-gray-100 {
+  background-color: var(--color-card-background) !important;
+}
+
+.dark-theme .bg-white {
+  background-color: var(--color-card-background) !important;
+}
+
+/* Colores de texto */
+.dark-theme .text-gray-900 {
+  color: var(--color-text-primary) !important;
+}
+
+.dark-theme .text-gray-700 {
+  color: var(--color-text-primary) !important;
+}
+
+.dark-theme .text-gray-600 {
+  color: var(--color-text-secondary) !important;
+}
+
+.dark-theme .text-gray-500 {
+  color: var(--color-text-muted) !important;
+}
+
+/* Bordes */
+.dark-theme .border-gray-200 {
+  border-color: var(--color-border) !important;
+}
+
+.dark-theme .border-gray-300 {
+  border-color: var(--color-border) !important;
+}
+
+/* Sombras para modo oscuro */
+.dark-theme .shadow-md {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2) !important;
+}
+
+.dark-theme .shadow-lg {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2) !important;
+}
+
+.dark-theme .shadow-xl {
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2) !important;
+}

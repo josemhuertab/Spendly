@@ -113,6 +113,10 @@ const isActive = (name) => computed(() => route.name === name)
   color: #fff;
   transition: transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.2s ease;
 }
+
+:global(.dark-theme) .sidebar {
+  background: linear-gradient(180deg, #047857 0%, #059669 100%);
+}
 .sidebar .v-list-item {
   color: #fff;
 }

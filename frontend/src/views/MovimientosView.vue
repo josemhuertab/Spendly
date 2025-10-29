@@ -356,13 +356,13 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <v-container fluid class="pa-6">
+  <v-container fluid class="pa-6 theme-bg min-h-screen">
     <!-- Header -->
     <div class="mb-8">
       <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
         <div>
-          <h1 class="text-3xl font-bold text-gray-900 mb-2">Movimientos</h1>
-          <p class="text-gray-600">Gestiona tus ingresos y gastos de manera inteligente</p>
+          <h1 class="text-3xl font-bold theme-text-primary mb-2">Movimientos</h1>
+          <p class="theme-text-secondary">Gestiona tus ingresos y gastos de manera inteligente</p>
         </div>
         
         <v-btn
@@ -379,7 +379,7 @@ onUnmounted(() => {
       <!-- Summary Period Selector -->
       <div class="mb-6">
         <div class="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
-          <h2 class="text-lg font-semibold text-gray-900">{{ summaryTitle }}</h2>
+          <h2 class="text-lg font-semibold theme-text-primary">{{ summaryTitle }}</h2>
           
           <div class="flex gap-3 items-center">
             <v-select
