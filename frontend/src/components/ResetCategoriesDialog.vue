@@ -53,6 +53,7 @@ async function confirmReset() {
     persistent
     class="reset-categories-dialog"
     :fullscreen="$vuetify.display.xs"
+    scrollable
   >
     <v-card class="rounded-xl overflow-hidden">
       <!-- Header con gradiente naranja -->
@@ -150,13 +151,13 @@ async function confirmReset() {
       </v-card-text>
 
       <!-- Acciones -->
-      <v-card-actions class="px-6 py-4 bg-gray-50">
+      <v-card-actions class="px-4 py-3 bg-gray-50 gap-2">
         <v-btn
           @click="closeDialog"
           variant="outlined"
-          size="large"
+          size="default"
           prepend-icon="mdi-arrow-left"
-          class="flex-1"
+          class="flex-1 text-xs sm:text-sm"
         >
           Cancelar
         </v-btn>
@@ -165,11 +166,11 @@ async function confirmReset() {
           @click="confirmReset"
           color="warning"
           variant="flat"
-          size="large"
+          size="default"
           :loading="loading"
           :disabled="!isFormValid"
           prepend-icon="mdi-restore"
-          class="flex-1"
+          class="flex-1 text-xs sm:text-sm"
         >
           <span class="hidden sm:inline">Sí, Restaurar Categorías</span>
           <span class="sm:hidden">Restaurar</span>
@@ -190,13 +191,29 @@ code {
 }
 
 .reset-categories-dialog :deep(.v-overlay__content) {
-  margin: 24px;
+  margin: 16px;
+  max-height: calc(100vh - 32px);
 }
 
 @media (max-width: 600px) {
   .reset-categories-dialog :deep(.v-overlay__content) {
     margin: 0;
     height: 100vh;
+    max-height: 100vh;
+  }
+}
+
+/* Estilos para botones responsivos */
+.reset-categories-dialog :deep(.v-btn) {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+@media (max-width: 480px) {
+  .reset-categories-dialog :deep(.v-btn .v-btn__content) {
+    font-size: 0.75rem;
   }
 }
 </style>

@@ -55,6 +55,8 @@ async function confirmDelete() {
     max-width="600" 
     persistent
     class="delete-account-dialog"
+    :fullscreen="$vuetify.display.xs"
+    scrollable
   >
     <v-card class="rounded-xl overflow-hidden">
       <!-- Header con gradiente rojo -->
@@ -166,28 +168,30 @@ async function confirmDelete() {
       </v-card-text>
 
       <!-- Acciones -->
-      <v-card-actions class="px-6 py-4 bg-gray-50">
+      <v-card-actions class="px-4 py-3 bg-gray-50 gap-2">
         <v-btn
           @click="closeDialog"
           variant="outlined"
-          size="large"
+          size="default"
           prepend-icon="mdi-arrow-left"
-          class="flex-1"
+          class="flex-1 text-xs sm:text-sm"
         >
-          Cancelar y Mantener Cuenta
+          <span class="hidden sm:inline">Cancelar y Mantener Cuenta</span>
+          <span class="sm:hidden">Cancelar</span>
         </v-btn>
         
         <v-btn
           @click="confirmDelete"
           color="error"
           variant="flat"
-          size="large"
+          size="default"
           :loading="loading"
           :disabled="!isFormValid"
           prepend-icon="mdi-delete-forever"
-          class="flex-1"
+          class="flex-1 text-xs sm:text-sm"
         >
-          Sí, Eliminar Permanentemente
+          <span class="hidden sm:inline">Sí, Eliminar Permanentemente</span>
+          <span class="sm:hidden">Eliminar</span>
         </v-btn>
       </v-card-actions>
     </v-card>
@@ -205,6 +209,29 @@ code {
 }
 
 .delete-account-dialog :deep(.v-overlay__content) {
-  margin: 24px;
+  margin: 16px;
+  max-height: calc(100vh - 32px);
+}
+
+@media (max-width: 600px) {
+  .delete-account-dialog :deep(.v-overlay__content) {
+    margin: 0;
+    height: 100vh;
+    max-height: 100vh;
+  }
+}
+
+/* Estilos para botones responsivos */
+.delete-account-dialog :deep(.v-btn) {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+@media (max-width: 480px) {
+  .delete-account-dialog :deep(.v-btn .v-btn__content) {
+    font-size: 0.75rem;
+  }
 }
 </style>

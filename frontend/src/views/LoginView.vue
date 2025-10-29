@@ -64,7 +64,7 @@ async function onSubmit() {
 
     <template #form>
       <div class="auth__form">
-        <h2 class="text-h5 text-white mb-6 text-center font-weight-bold">Iniciar Sesión</h2>
+        <h2 class="text-h5 mb-6 text-center font-weight-bold">Iniciar Sesión</h2>
         
         <v-form @submit.prevent="onSubmit">
           <v-text-field 

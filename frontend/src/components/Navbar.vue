@@ -85,6 +85,22 @@ const menuItems = [
 
 .navbar-theme {
   background: linear-gradient(90deg, #379237 0%, #54B435 100%) !important;
+  z-index: 1000 !important;
+}
+
+/* Scrolling navbar on desktop and tablet */
+@media (min-width: 961px) {
+  .navbar-theme {
+    position: relative !important;
+  }
+}
+
+/* Fixed navbar only on mobile */
+@media (max-width: 960px) {
+  .navbar-theme {
+    position: fixed !important;
+    top: 0 !important;
+  }
 }
 
 :global(.dark-theme) .navbar-theme {

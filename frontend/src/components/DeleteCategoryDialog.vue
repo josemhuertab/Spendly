@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 
 const props = defineProps({
     modelValue: {
@@ -29,6 +29,13 @@ const isOpen = computed({
     set: (value) => emit('update:modelValue', value)
 })
 
+// Resetear loading cuando se cierre el diálogo
+watch(isOpen, (newValue) => {
+    if (!newValue) {
+        loading.value = false
+    }
+})
+
 const isSubcategory = computed(() => props.type === 'subcategory')
 
 const title = computed(() => {
@@ -46,11 +53,13 @@ const description = computed(() => {
 })
 
 function closeDialog() {
-    isOpen.value = false
     loading.value = false
+    isOpen.value = false
 }
 
 async function confirmDelete() {
+    if (loading.value) return // Prevenir múltiples clicks
+    
     loading.value = true
     try {
         // Emit the confirm event and wait for the parent to handle it

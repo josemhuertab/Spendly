@@ -139,7 +139,7 @@ const stepTitle = computed(() => {
 
     <template #form>
       <div class="auth__form">
-        <h2 class="text-h5 text-white mb-6 text-center font-weight-bold">{{ stepTitle }}</h2>
+        <h2 class="text-h5 mb-6 text-center font-weight-bold">{{ stepTitle }}</h2>
         
         <!-- Paso 1: Solicitar email -->
         <div v-if="currentStep === 1">
