@@ -242,7 +242,7 @@ Si Spendly te ha sido útil, considera:
 
 **¡Toma control de tus finanzas hoy mismo!**
 
-[![Probar Spendly](https://img.shields.io/badge/🚀_Probar_Spendly-Gratis-4CAF50?style=for-the-badge)](https://josemhuertab.github.io/spendly)
+[![Probar Spendly](https://img.shields.io/badge/🚀_Probar_Spendly-Gratis-4CAF50?style=for-the-badge)](https://josemhuertab.github.io/Spendly)
 
 ---
 
