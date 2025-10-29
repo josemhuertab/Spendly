@@ -348,20 +348,27 @@ onUnmounted(() => transactionStore.stopRealtime())
 <template>
   <v-container fluid class="pa-6 theme-bg min-h-screen">
     <div class="mb-8">
-      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+      <div class="space-y-4 mb-6">
+        <!-- Título y descripción -->
         <div>
           <h1 class="text-3xl font-bold theme-text-primary mb-2">Compras con Tarjeta / Cuotas</h1>
           <p class="theme-text-secondary">Registra tus compras con tarjeta de crédito y controla las cuotas pagadas.</p>
         </div>
-        <div class="flex items-center gap-3">
+        
+        <!-- Botones de acción - Responsive -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <v-btn
             @click="showAdvancedFilters = !showAdvancedFilters"
             variant="outlined"
             prepend-icon="mdi-filter-cog"
             :color="showAdvancedFilters || hasActiveFilters ? 'primary' : 'default'"
+            size="large"
+            block
           >
-            Filtros Avanzados
+            <span class="hidden sm:inline">Filtros Avanzados</span>
+            <span class="sm:hidden">Filtros</span>
           </v-btn>
+          
           <v-btn 
             color="success" 
             size="large" 
@@ -369,11 +376,22 @@ onUnmounted(() => transactionStore.stopRealtime())
             class="bg-gradient-to-r from-emerald-600 to-emerald-700 text-white shadow-lg hover:shadow-xl"
             @click="payAllPendingInstallments"
             :disabled="summary.productosPendientes === 0"
+            block
           >
-            Pagar Cuota Mensual
+            <span class="hidden sm:inline">Pagar Cuota Mensual</span>
+            <span class="sm:hidden">Pagar Cuota</span>
           </v-btn>
-          <v-btn color="primary" size="large" prepend-icon="mdi-plus" class="bg-gradient-to-r from-green-600 to-green-700 text-white shadow-lg hover:shadow-xl" @click="openNew">
-            Nueva Compra
+          
+          <v-btn 
+            color="primary" 
+            size="large" 
+            prepend-icon="mdi-plus" 
+            class="bg-gradient-to-r from-green-600 to-green-700 text-white shadow-lg hover:shadow-xl" 
+            @click="openNew"
+            block
+          >
+            <span class="hidden sm:inline">Nueva Compra</span>
+            <span class="sm:hidden">Nueva</span>
           </v-btn>
         </div>
       </div>

@@ -227,60 +227,78 @@ onUnmounted(() => savingsStore.stopRealtime())
   <v-container fluid class="pa-6 theme-bg min-h-screen">
     <!-- Header -->
     <div class="mb-8">
-      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+      <div class="space-y-4 mb-6">
+        <!-- Título y descripción -->
         <div>
           <h1 class="text-3xl font-bold theme-text-primary mb-2">Ahorros</h1>
           <p class="theme-text-secondary">Registra tus ahorros mensuales y visualiza tu progreso</p>
-          <div class="mt-2">
-            <v-chip
-              color="primary"
-              variant="flat"
-              size="small"
-              prepend-icon="mdi-calendar"
-            >
-              {{ currentPeriodTitle }}
-            </v-chip>
-          </div>
+
         </div>
 
-        <div class="flex items-center gap-3">
-          <v-select
-            v-model="savingsStore.filterYear"
-            :items="years"
-            label="Año"
-            variant="outlined"
-            density="comfortable"
-            hide-details
-            style="max-width:160px"
-            @update:model-value="savingsStore.setYear($event)"
-          />
-          <v-select
-            v-model="savingsStore.filterMonth"
-            :items="monthItems"
-            item-title="label"
-            item-value="value"
-            label="Mes"
-            variant="outlined"
-            density="comfortable"
-            hide-details
-            style="max-width:180px"
-            @update:model-value="savingsStore.setMonth($event)"
-          />
-          <v-btn color="primary" size="large" prepend-icon="mdi-plus" class="bg-gradient-to-r from-green-600 to-green-700 text-white shadow-lg hover:shadow-xl" @click="openNew">
-            Nuevo Ahorro
-          </v-btn>
-          <v-btn color="secondary" size="large" prepend-icon="mdi-calendar-multiselect" class="bg-gradient-to-r from-emerald-600 to-emerald-700 text-white shadow-lg hover:shadow-xl" @click="showYearForm=true">
-            Registrar por Año
-          </v-btn>
-          <v-btn
-            @click="showAdvancedFilters = !showAdvancedFilters"
-            variant="outlined"
-            prepend-icon="mdi-filter-cog"
-            :color="showAdvancedFilters ? 'primary' : 'default'"
-          >
-            Filtros Avanzados
-          </v-btn>
-
+        <!-- Controles - Responsive -->
+        <div class="space-y-3">
+          <!-- Filtros de fecha en mobile -->
+          <div class="grid grid-cols-2 sm:flex sm:items-center gap-3">
+            <v-select
+              v-model="savingsStore.filterYear"
+              :items="years"
+              label="Año"
+              variant="outlined"
+              density="comfortable"
+              hide-details
+              @update:model-value="savingsStore.setYear($event)"
+            />
+            <v-select
+              v-model="savingsStore.filterMonth"
+              :items="monthItems"
+              item-title="label"
+              item-value="value"
+              label="Mes"
+              variant="outlined"
+              density="comfortable"
+              hide-details
+              @update:model-value="savingsStore.setMonth($event)"
+            />
+          </div>
+          
+          <!-- Botones de acción -->
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <v-btn 
+              color="primary" 
+              size="large" 
+              prepend-icon="mdi-plus" 
+              class="bg-gradient-to-r from-green-600 to-green-700 text-white shadow-lg hover:shadow-xl" 
+              @click="openNew"
+              block
+            >
+              <span class="hidden sm:inline">Nuevo Ahorro</span>
+              <span class="sm:hidden">Nuevo</span>
+            </v-btn>
+            
+            <v-btn 
+              color="secondary" 
+              size="large" 
+              prepend-icon="mdi-calendar-multiselect" 
+              class="bg-gradient-to-r from-emerald-600 to-emerald-700 text-white shadow-lg hover:shadow-xl" 
+              @click="showYearForm=true"
+              block
+            >
+              <span class="hidden sm:inline">Registrar por Año</span>
+              <span class="sm:hidden">Por Año</span>
+            </v-btn>
+            
+            <v-btn
+              @click="showAdvancedFilters = !showAdvancedFilters"
+              variant="outlined"
+              prepend-icon="mdi-filter-cog"
+              :color="showAdvancedFilters || hasActiveFilters ? 'primary' : 'default'"
+              size="large"
+              block
+            >
+              <span class="hidden sm:inline">Filtros Avanzados</span>
+              <span class="sm:hidden">Filtros</span>
+            </v-btn>
+          </div>
         </div>
       </div>
 
@@ -335,55 +353,66 @@ onUnmounted(() => savingsStore.stopRealtime())
             </div>
             
             <div v-else class="space-y-4">
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="flex gap-2 items-center">
-                  <span class="text-sm text-gray-600 font-medium" style="min-width: 60px;">Desde:</span>
-                  <v-select
-                    v-model="fromYear"
-                    :items="years"
-                    label="Año"
-                    variant="outlined"
-                    density="comfortable"
-                    @update:model-value="applyFilters"
-                    style="min-width: 90px; flex: 0 0 90px;"
-                  />
-                  <v-select
-                    v-model="fromMonth"
-                    :items="monthItemsNoAll"
-                    item-title="label"
-                    item-value="value"
-                    label="Mes"
-                    variant="outlined"
-                    density="comfortable"
-                    clearable
-                    @update:model-value="applyFilters"
-                    style="min-width: 140px; flex: 1;"
-                  />
+              <!-- Layout responsive: vertical en mobile, horizontal en desktop -->
+              <div class="space-y-4 md:space-y-0 md:grid md:grid-cols-2 md:gap-4">
+                <!-- Desde -->
+                <div class="space-y-3 md:space-y-0 md:flex md:gap-2 md:items-center">
+                  <span class="text-sm text-gray-600 font-medium block md:inline" style="md:min-width: 60px;">Desde:</span>
+                  <div class="grid grid-cols-2 gap-2 md:flex md:gap-2 md:flex-1">
+                    <v-select
+                      v-model="fromYear"
+                      :items="years"
+                      label="Año"
+                      variant="outlined"
+                      density="comfortable"
+                      @update:model-value="applyFilters"
+                      class="md:flex-none"
+                      style="md:min-width: 90px;"
+                    />
+                    <v-select
+                      v-model="fromMonth"
+                      :items="monthItemsNoAll"
+                      item-title="label"
+                      item-value="value"
+                      label="Mes"
+                      variant="outlined"
+                      density="comfortable"
+                      clearable
+                      @update:model-value="applyFilters"
+                      class="md:flex-1"
+                      style="md:min-width: 140px;"
+                    />
+                  </div>
                 </div>
                 
-                <div class="flex gap-2 items-center">
-                  <span class="text-sm text-gray-600 font-medium" style="min-width: 60px;">Hasta:</span>
-                  <v-select
-                    v-model="toYear"
-                    :items="years"
-                    label="Año"
-                    variant="outlined"
-                    density="comfortable"
-                    @update:model-value="applyFilters"
-                    style="min-width: 90px; flex: 0 0 90px;"
-                  />
-                  <v-select
-                    v-model="toMonth"
-                    :items="monthItemsNoAll"
-                    item-title="label"
-                    item-value="value"
-                    label="Mes"
-                    variant="outlined"
-                    density="comfortable"
-                    clearable
-                    @update:model-value="applyFilters"
-                    style="min-width: 140px; flex: 1;"
-                  />
+                <!-- Hasta -->
+                <div class="space-y-3 md:space-y-0 md:flex md:gap-2 md:items-center">
+                  <span class="text-sm text-gray-600 font-medium block md:inline" style="md:min-width: 60px;">Hasta:</span>
+                  <div class="grid grid-cols-2 gap-2 md:flex md:gap-2 md:flex-1">
+                    <v-select
+                      v-model="toYear"
+                      :items="years"
+                      label="Año"
+                      variant="outlined"
+                      density="comfortable"
+                      @update:model-value="applyFilters"
+                      class="md:flex-none"
+                      style="md:min-width: 90px;"
+                    />
+                    <v-select
+                      v-model="toMonth"
+                      :items="monthItemsNoAll"
+                      item-title="label"
+                      item-value="value"
+                      label="Mes"
+                      variant="outlined"
+                      density="comfortable"
+                      clearable
+                      @update:model-value="applyFilters"
+                      class="md:flex-1"
+                      style="md:min-width: 140px;"
+                    />
+                  </div>
                 </div>
               </div>
             </div>

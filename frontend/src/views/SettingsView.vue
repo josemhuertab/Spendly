@@ -218,8 +218,10 @@ onMounted(() => {
                 variant="outlined"
                 prepend-icon="mdi-account-cog"
                 size="small"
+                class="text-xs sm:text-sm whitespace-nowrap"
               >
-                Configurar Perfil
+                <span class="hidden sm:inline">Configurar Perfil</span>
+                <span class="sm:hidden">Perfil</span>
               </v-btn>
             </div>
           </div>
@@ -270,7 +272,10 @@ onMounted(() => {
             <v-icon color="purple" size="24">mdi-information</v-icon>
           </div>
           <div>
-            <h3 class="text-lg font-semibold text-gray-900">Información sobre Conversión de Moneda</h3>
+            <h3 class="text-lg font-semibold text-gray-900">
+              <span class="hidden sm:inline">Información sobre Conversión de Moneda</span>
+              <span class="sm:hidden">Conversión de Moneda</span>
+            </h3>
             <p class="text-sm text-gray-600">Cómo funciona el sistema de monedas</p>
           </div>
         </div>

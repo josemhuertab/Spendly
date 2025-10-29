@@ -378,82 +378,86 @@ onUnmounted(() => {
 
       <!-- Summary Period Selector -->
       <div class="mb-6">
-        <div class="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
-          <h2 class="text-lg font-semibold theme-text-primary">{{ summaryTitle }}</h2>
-          
-          <div class="flex gap-3 items-center">
+        <div class="space-y-4">
+          <div class="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+            <h2 class="text-lg font-semibold theme-text-primary">{{ summaryTitle }}</h2>
+            
             <v-select
               v-model="summaryPeriod"
               :items="summaryPeriodOptions"
               variant="outlined"
               density="compact"
               hide-details
-              class="min-w-[220px]"
+              class="min-w-[220px] sm:max-w-[220px]"
               style="min-width: 220px;"
             />
-            
-            <!-- Custom period selectors -->
-            <div v-if="summaryPeriod === 'custom'" class="flex gap-3 items-center flex-wrap">
-              <div class="flex gap-2 items-center">
+          </div>
+          
+          <!-- Custom period selectors - Separado del flex principal -->
+          <div v-if="summaryPeriod === 'custom'" class="space-y-4">
+            <!-- Layout completamente vertical en mobile -->
+            <div class="space-y-4 md:space-y-0 md:grid md:grid-cols-2 md:gap-4">
+              <!-- Desde -->
+              <div class="space-y-3">
                 <span class="text-sm text-gray-600 font-medium">Desde:</span>
-                <v-select
-                  v-model="summaryYear"
-                  :items="availableYears"
-                  label="Año"
-                  variant="outlined"
-                  density="compact"
-                  hide-details
-                  class="w-24"
-                  style="min-width: 90px;"
-                />
-                
-                <v-select
-                  v-model="summaryMonth"
-                  :items="[{ title: 'Enero', value: 1 }, ...monthOptions.slice(1)]"
-                  label="Mes"
-                  variant="outlined"
-                  density="compact"
-                  hide-details
-                  class="w-36"
-                  style="min-width: 140px;"
-                  clearable
-                />
+                <div class="grid grid-cols-2 gap-2">
+                  <v-select
+                    v-model="summaryYear"
+                    :items="availableYears"
+                    label="Año"
+                    variant="outlined"
+                    density="compact"
+                    hide-details
+                  />
+                  
+                  <v-select
+                    v-model="summaryMonth"
+                    :items="[{ title: 'Enero', value: 1 }, ...monthOptions.slice(1)]"
+                    label="Mes"
+                    variant="outlined"
+                    density="compact"
+                    hide-details
+                    clearable
+                  />
+                </div>
               </div>
               
-              <div class="flex gap-2 items-center">
+              <!-- Hasta -->
+              <div class="space-y-3">
                 <span class="text-sm text-gray-600 font-medium">Hasta:</span>
-                <v-select
-                  v-model="summaryYearTo"
-                  :items="availableYears"
-                  label="Año"
-                  variant="outlined"
-                  density="compact"
-                  hide-details
-                  class="w-24"
-                  style="min-width: 90px;"
-                />
-                
-                <v-select
-                  v-model="summaryMonthTo"
-                  :items="[{ title: 'Diciembre', value: 12 }, ...monthOptions.slice(0, -1)]"
-                  label="Mes"
-                  variant="outlined"
-                  density="compact"
-                  hide-details
-                  class="w-36"
-                  style="min-width: 140px;"
-                  clearable
-                />
+                <div class="grid grid-cols-2 gap-2">
+                  <v-select
+                    v-model="summaryYearTo"
+                    :items="availableYears"
+                    label="Año"
+                    variant="outlined"
+                    density="compact"
+                    hide-details
+                  />
+                  
+                  <v-select
+                    v-model="summaryMonthTo"
+                    :items="[{ title: 'Diciembre', value: 12 }, ...monthOptions.slice(0, -1)]"
+                    label="Mes"
+                    variant="outlined"
+                    density="compact"
+                    hide-details
+                    clearable
+                  />
+                </div>
               </div>
-              
+            </div>
+            
+            <div class="flex justify-center">
               <v-btn
                 @click="resetSummaryToCurrentMonth"
                 variant="outlined"
                 size="small"
-                icon="mdi-refresh"
-                title="Resetear al mes actual"
+                prepend-icon="mdi-refresh"
                 color="primary"
-              />
+              >
+                Resetear al mes actual
+              </v-btn>
             </div>
           </div>
         </div>

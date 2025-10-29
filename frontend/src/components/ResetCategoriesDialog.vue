@@ -52,6 +52,7 @@ async function confirmReset() {
     max-width="550" 
     persistent
     class="reset-categories-dialog"
+    :fullscreen="$vuetify.display.xs"
   >
     <v-card class="rounded-xl overflow-hidden">
       <!-- Header con gradiente naranja -->
@@ -61,7 +62,10 @@ async function confirmReset() {
             <v-icon size="28" color="white">mdi-restore</v-icon>
           </div>
           <div>
-            <h3 class="text-xl font-bold">Restaurar Categorías por Defecto</h3>
+            <h3 class="text-lg sm:text-xl font-bold">
+              <span class="hidden sm:inline">Restaurar Categorías por Defecto</span>
+              <span class="sm:hidden">Restaurar Categorías</span>
+            </h3>
             <p class="text-orange-100 text-sm mt-1">Esta acción no se puede deshacer</p>
           </div>
         </div>
@@ -114,7 +118,9 @@ async function confirmReset() {
         <div class="space-y-4">
           <div>
             <label class="block text-sm font-semibold text-gray-900 mb-2">
-              Para continuar, escribe exactamente: <code class="bg-gray-200 px-2 py-1 rounded text-orange-600 font-mono">restaurar categorías</code>
+              <span class="hidden sm:inline">Para continuar, escribe exactamente:</span>
+              <span class="sm:hidden">Escribe:</span>
+              <code class="bg-gray-200 px-2 py-1 rounded text-orange-600 font-mono text-xs sm:text-sm block sm:inline mt-1 sm:mt-0">restaurar categorías</code>
             </label>
             <v-text-field
               v-model="confirmText"
@@ -165,7 +171,8 @@ async function confirmReset() {
           prepend-icon="mdi-restore"
           class="flex-1"
         >
-          Sí, Restaurar Categorías
+          <span class="hidden sm:inline">Sí, Restaurar Categorías</span>
+          <span class="sm:hidden">Restaurar</span>
         </v-btn>
       </v-card-actions>
     </v-card>
@@ -184,5 +191,12 @@ code {
 
 .reset-categories-dialog :deep(.v-overlay__content) {
   margin: 24px;
+}
+
+@media (max-width: 600px) {
+  .reset-categories-dialog :deep(.v-overlay__content) {
+    margin: 0;
+    height: 100vh;
+  }
 }
 </style>
