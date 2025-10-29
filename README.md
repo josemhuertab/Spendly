@@ -8,8 +8,8 @@
 
 **La aplicación web más intuitiva para gestionar tus finanzas personales**
 
-[![Demo Live](https://img.shields.io/badge/🚀_Demo_Live-Probar_Ahora-4CAF50?style=for-the-badge)](https://josemhuertab.github.io/spendly)
-[![Versión](https://img.shields.io/badge/Versión-1.0.0-blue?style=for-the-badge)](https://github.com/josemhuertab/spendly)
+[![Demo Live](https://img.shields.io/badge/🚀_Demo_Live-Probar_Ahora-4CAF50?style=for-the-badge)](https://josemhuertab.github.io/Spendly)
+[![Versión](https://img.shields.io/badge/Versión-1.0.0-blue?style=for-the-badge)](https://github.com/josemhuertab/Spendly)
 [![Licencia](https://img.shields.io/badge/Licencia-Propietaria-red?style=for-the-badge)](#licencia)
 
 [🎯 Ver Demo](#demo) • [✨ Características](#características) • [📱 Capturas](#capturas-de-pantalla) • [🛠️ Tecnologías](#tecnologías) • [📞 Contacto](#contacto)
@@ -89,7 +89,12 @@ Convertirse en la aplicación de finanzas personales más reconocida por su simp
 ## 📱 Capturas de Pantalla
 
 <img width="1920" height="876" alt="image" src="https://github.com/user-attachments/assets/da47270e-f35f-4342-98b6-0f4de60e072a" />
-
+<img width="1920" height="872" alt="image" src="https://github.com/user-attachments/assets/d03fb3dd-0214-4624-9216-4c48b7550d50" />
+<img width="1920" height="862" alt="image" src="https://github.com/user-attachments/assets/7070f250-d725-48c0-b27f-4c5f06ab12fb" />
+<img width="1920" height="869" alt="image" src="https://github.com/user-attachments/assets/593845ee-cb03-4dd0-917f-a9c1cc55939f" />
+<img width="1920" height="877" alt="image" src="https://github.com/user-attachments/assets/594610d9-8bbf-4c5a-8b12-0de9a4f3b12e" />
+<img width="1920" height="872" alt="image" src="https://github.com/user-attachments/assets/100f8ee1-7ff1-4575-9856-d3e452275995" />
+<img width="1920" height="875" alt="image" src="https://github.com/user-attachments/assets/c1c1a0e2-fc76-4b21-b144-a269532ee40d" />
 
 ---
 
