@@ -10,7 +10,8 @@ import {
   orderBy, 
   serverTimestamp,
   getDoc,
-  onSnapshot
+  onSnapshot,
+  setDoc
 } from 'firebase/firestore'
 import { db } from './firebaseConfig'
 
@@ -268,5 +269,64 @@ export async function getTransactionsSummary(userId) {
   } catch (error) {
     console.error('Error getting transactions summary:', error)
     throw new Error('Error al obtener el resumen de transacciones')
+  }
+}
+
+/**
+ * Guardar categorías personalizadas del usuario en Firestore
+ */
+export async function saveUserCategories(userId, categoriesData) {
+  try {
+    console.log('saveUserCategories called with:', { userId, categoriesData })
+    const docRef = doc(db, 'users', userId, 'settings', 'categories')
+    console.log('Document reference created:', docRef.path)
+    
+    // Verificar si el documento existe primero
+    console.log('Checking if document exists...')
+    const docSnap = await getDoc(docRef)
+    console.log('Document exists:', docSnap.exists())
+    
+    if (docSnap.exists()) {
+      // El documento existe, actualizarlo
+      console.log('Updating existing document...')
+      await updateDoc(docRef, {
+        ...categoriesData,
+        updatedAt: serverTimestamp()
+      })
+      console.log('Document updated successfully')
+    } else {
+      // El documento no existe, crearlo
+      console.log('Creating new document...')
+      await setDoc(docRef, {
+        ...categoriesData,
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp()
+      })
+      console.log('Document created successfully')
+    }
+  } catch (error) {
+    console.error('Error saving user categories:', error)
+    console.error('Error details:', error.code, error.message)
+    console.error('Full error object:', error)
+    throw new Error('Error al guardar las categorías personalizadas')
+  }
+}
+
+/**
+ * Obtener categorías personalizadas del usuario desde Firestore
+ */
+export async function getUserCategories(userId) {
+  try {
+    const docRef = doc(db, 'users', userId, 'settings', 'categories')
+    const docSnap = await getDoc(docRef)
+    
+    if (docSnap.exists()) {
+      return docSnap.data()
+    } else {
+      return null // No hay categorías personalizadas guardadas
+    }
+  } catch (error) {
+    console.error('Error getting user categories:', error)
+    throw new Error('Error al obtener las categorías personalizadas')
   }
 }

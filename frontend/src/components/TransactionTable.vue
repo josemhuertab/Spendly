@@ -61,7 +61,10 @@ function formatAmount(amount, type, fromCurrency) {
 }
 
 function formatDate(dateString) {
-  const date = new Date(dateString)
+  // Parse date as local date to avoid timezone issues
+  const [year, month, day] = dateString.split('-')
+  const date = new Date(year, month - 1, day)
+  
   return date.toLocaleDateString('es-ES', {
     day: '2-digit',
     month: '2-digit',
@@ -146,8 +149,11 @@ function formatDateRange() {
   const to = transactionStore.filters.dateTo
   
   if (from && to) {
-    const fromDate = new Date(from)
-    const toDate = new Date(to)
+    // Parse dates as local dates to avoid timezone issues
+    const [fromYear, fromMonth, fromDay] = from.split('-')
+    const [toYear, toMonth, toDay] = to.split('-')
+    const fromDate = new Date(fromYear, fromMonth - 1, fromDay)
+    const toDate = new Date(toYear, toMonth - 1, toDay)
     
     // Check if it's a month range
     if (fromDate.getDate() === 1 && toDate.getDate() === new Date(toDate.getFullYear(), toDate.getMonth() + 1, 0).getDate()) {
