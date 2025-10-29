@@ -250,17 +250,28 @@ onMounted(async () => {
               <div v-if="categoryStore.getSubcategoriesForCategory(category).length > 0" class="ml-8">
                 <p class="text-sm text-gray-600 mb-2">Subcategorías:</p>
                 <div class="flex flex-wrap gap-2">
-                  <v-chip
+                  <div
                     v-for="subcategory in categoryStore.getSubcategoriesForCategory(category)"
                     :key="subcategory"
-                    size="small"
-                    variant="outlined"
-                    closable
-                    @click:close="openDeleteSubcategoryDialog(category, subcategory)"
+                    class="relative"
                   >
-                    <v-icon start size="16">mdi-tag-outline</v-icon>
-                    {{ subcategory }}
-                  </v-chip>
+                    <v-chip
+                      size="small"
+                      variant="outlined"
+                      class="pr-8"
+                    >
+                      <v-icon start size="16">mdi-tag-outline</v-icon>
+                      {{ subcategory }}
+                    </v-chip>
+                    <v-btn
+                      @click="openDeleteSubcategoryDialog(category, subcategory)"
+                      size="x-small"
+                      variant="text"
+                      icon="mdi-close"
+                      class="absolute -top-1 -right-1 bg-gray-100 hover:bg-red-100 hover:text-red-600 rounded-full"
+                      style="width: 20px; height: 20px; min-width: 20px;"
+                    />
+                  </div>
                 </div>
               </div>
             </v-card-text>
