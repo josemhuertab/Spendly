@@ -88,6 +88,7 @@ Convertirse en la aplicación de finanzas personales más reconocida por su simp
 
 ## 📱 Capturas de Pantalla
 
+<img width="1920" height="876" alt="image" src="https://github.com/user-attachments/assets/da47270e-f35f-4342-98b6-0f4de60e072a" />
 
 
 ---
