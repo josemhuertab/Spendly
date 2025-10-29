@@ -76,7 +76,7 @@ El nombre **"Spendly"** surge de un juego de palabras inteligente: **"Spend"** (
 ### 🚀 **Misión**
 Desarrollar una herramienta web que permita a los usuarios organizar de forma clara sus finanzas personales, eliminando la complejidad y brindando control real sobre su economía.
 
-### �  **Visión**
+### 👀  **Visión**
 Convertirse en la aplicación de finanzas personales más reconocida por su simplicidad y personalización, ayudando a las personas a tener mayor control sobre su propia economía sin depender de herramientas genéricas.
 
 ### 💎 **Valores**
