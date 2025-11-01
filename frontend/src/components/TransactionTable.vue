@@ -2,6 +2,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useTransactionStore } from '../store/transactionStore'
 import { useCurrencyStore } from '../store/currencyStore'
+import { parseLocalDate } from '../utils/dateUtils'
 
 const emit = defineEmits(['edit-transaction', 'delete-transaction'])
 
@@ -61,9 +62,10 @@ function formatAmount(amount, type, fromCurrency) {
 }
 
 function formatDate(dateString) {
-  // Parse date as local date to avoid timezone issues
-  const [year, month, day] = dateString.split('-')
-  const date = new Date(year, month - 1, day)
+  if (!dateString) return ''
+  
+  const date = parseLocalDate(dateString)
+  if (!date) return dateString
   
   return date.toLocaleDateString('es-ES', {
     day: '2-digit',
@@ -149,11 +151,12 @@ function formatDateRange() {
   const to = transactionStore.filters.dateTo
   
   if (from && to) {
-    // Parse dates as local dates to avoid timezone issues
-    const [fromYear, fromMonth, fromDay] = from.split('-')
-    const [toYear, toMonth, toDay] = to.split('-')
-    const fromDate = new Date(fromYear, fromMonth - 1, fromDay)
-    const toDate = new Date(toYear, toMonth - 1, toDay)
+    const fromDate = parseLocalDate(from)
+    const toDate = parseLocalDate(to)
+    
+    if (!fromDate || !toDate) {
+      return `${from} - ${to}`
+    }
     
     // Check if it's a month range
     if (fromDate.getDate() === 1 && toDate.getDate() === new Date(toDate.getFullYear(), toDate.getMonth() + 1, 0).getDate()) {

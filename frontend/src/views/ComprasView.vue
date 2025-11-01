@@ -4,6 +4,7 @@ import { useTransactionStore } from '@/store/transactionStore'
 import { useCurrencyStore } from '@/store/currencyStore'
 import TransactionForm from '@/components/TransactionForm.vue'
 import CreditPurchasesTable from '@/components/CreditPurchasesTable.vue'
+import { parseLocalDate, isDateInMonth, isDateInYear } from '../utils/dateUtils'
 
 const transactionStore = useTransactionStore()
 const currencyStore = useCurrencyStore()
@@ -28,7 +29,8 @@ const creditPurchases = computed(() => {
   // Aplicar filtros de fecha
   if (filterType.value !== 'all') {
     filtered = filtered.filter(t => {
-      const transactionDate = new Date(t.date)
+      const transactionDate = parseLocalDate(t.date)
+      if (!transactionDate) return false
       
       if (filterType.value === 'current') {
         const now = new Date()
@@ -98,7 +100,9 @@ const availableYears = computed(() => {
   const years = new Set()
   transactionStore.transactions.forEach(t => {
     if (t.type === 'gasto' && t.paymentMethod === 'tarjeta_credito' && t.date) {
-      const year = new Date(t.date).getFullYear()
+      const date = parseLocalDate(t.date)
+      if (!date) return
+      const year = date.getFullYear()
       years.add(year)
     }
   })
@@ -183,7 +187,8 @@ function calculateMonthlyInstallments(purchases) {
   const currentMonth = currentDate.getFullYear() * 12 + currentDate.getMonth()
   
   purchases.forEach(purchase => {
-    const purchaseDate = new Date(purchase.date)
+    const purchaseDate = parseLocalDate(purchase.date)
+    if (!purchaseDate) return
     const startMonth = purchaseDate.getFullYear() * 12 + purchaseDate.getMonth()
     const installments = Number(purchase.installments || 1)
     const paid = Math.min(Number(purchase.installmentsPaid || 0), installments)

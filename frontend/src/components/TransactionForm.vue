@@ -3,6 +3,7 @@ import { ref, computed, watch, onMounted } from 'vue'
 import { useTransactionStore } from '../store/transactionStore'
 import { useCurrencyStore } from '../store/currencyStore'
 import { useCategoryStore } from '../store/categoryStore'
+import { getTodayLocalDateString } from '../utils/dateUtils'
 
 const props = defineProps({
   transaction: {
@@ -36,7 +37,7 @@ const formData = ref({
   subcategory: '',
   amount: null,
   description: '',
-  date: new Date().toISOString().split('T')[0],
+  date: getTodayLocalDateString(),
   paymentMethod: 'efectivo',
   installments: 1,
   installmentsPaid: 0
@@ -154,7 +155,7 @@ function initializeForm() {
       subcategory: props.transaction.subcategory || '',
       amount: props.transaction.amount || null,
       description: props.transaction.description || '',
-      date: props.transaction.date || new Date().toISOString().split('T')[0],
+      date: props.transaction.date || getTodayLocalDateString(),
       paymentMethod: props.transaction.paymentMethod || 'efectivo',
       installments: props.transaction.installments || 1,
       installmentsPaid: props.transaction.installmentsPaid || 0
@@ -210,7 +211,7 @@ function resetForm() {
       subcategory: '',
       amount: null,
       description: '',
-      date: new Date().toISOString().split('T')[0],
+      date: getTodayLocalDateString(),
       paymentMethod: props.presetPaymentMethod || 'efectivo',
       installments: 1,
       installmentsPaid: 0
