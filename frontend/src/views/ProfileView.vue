@@ -4,7 +4,6 @@ import { useRouter } from 'vue-router'
 import { useUserStore } from '../store/userStore'
 import { auth } from '../services/firebaseConfig'
 import {
-  updateUserDisplayName,
   changeUserEmail,
   updateUserPassword,
   uploadUserProfilePhoto,
@@ -13,11 +12,11 @@ import {
   logoutUser
 } from '../services/authService'
 import DeleteAccountDialog from '../components/DeleteAccountDialog.vue'
+import UserProfileManager from '../components/UserProfileManager.vue'
 
 const router = useRouter()
 const userStore = useUserStore()
 
-const nameInput = ref(userStore.displayName || '')
 const emailInput = ref(userStore.userEmail || '')
 const emailCurrentPassword = ref('')
 const passCurrent = ref('')
@@ -26,7 +25,6 @@ const passConfirm = ref('')
 const selectedFile = ref(null)
 const previewUrl = ref(userStore.user?.photoURL || '')
 
-const loadingName = ref(false)
 const loadingEmail = ref(false)
 const loadingPassword = ref(false)
 const uploadingPhoto = ref(false)
@@ -38,19 +36,6 @@ const showDeleteDialog = ref(false)
 const emailVerified = computed(() => userStore.user?.emailVerified)
 
 function clearMessages() { error.value = ''; success.value = '' }
-
-async function saveName() {
-  clearMessages()
-  loadingName.value = true
-  try {
-    await updateUserDisplayName(nameInput.value.trim())
-    userStore.setUser(auth.currentUser)
-    success.value = 'Nombre actualizado'
-  } catch (e) {
-    console.error(e)
-    error.value = e?.message || 'Error al actualizar nombre'
-  } finally { loadingName.value = false }
-}
 
 async function saveEmail() {
   clearMessages()
@@ -173,32 +158,43 @@ async function handleDeleteAccount(password) {
       <p class="text-gray-600">Gestiona tu información personal y seguridad de la cuenta</p>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <!-- Foto de perfil -->
-      <v-card class="rounded-xl border-0 shadow-md">
-         <v-card-title class="px-6 py-4">Foto de perfil</v-card-title>
-         <v-card-text class="px-6 py-4">
-           <div class="flex items-center gap-6">
-             <img :src="(userStore.user?.photoURL) || 'https://via.placeholder.com/96'" alt="Avatar" class="w-24 h-24 rounded-full object-cover border" />
-             <div class="flex-1 text-sm text-gray-700">
-                Subir/actualizar foto: Próximamente.
-              </div>
-           </div>
-         </v-card-text>
-       </v-card>
+    <!-- Información Personal -->
+    <div class="mb-8">
+      <h2 class="text-xl font-semibold text-gray-900 mb-4">Información Personal</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Foto de perfil -->
+        <v-card class="rounded-xl border-0 shadow-md">
+           <v-card-title class="px-6 py-4">Foto de perfil</v-card-title>
+           <v-card-text class="px-6 py-4">
+             <div class="flex items-center gap-6">
+               <img :src="(userStore.user?.photoURL) || 'https://via.placeholder.com/96'" alt="Avatar" class="w-24 h-24 rounded-full object-cover border" />
+               <div class="flex-1 text-sm text-gray-700">
+                  Subir/actualizar foto: Próximamente.
+                </div>
+             </div>
+           </v-card-text>
+         </v-card>
 
-      <!-- Nombre -->
-      <v-card class="rounded-xl border-0 shadow-md">
-        <v-card-title class="px-6 py-4">Nombre</v-card-title>
-        <v-card-text class="px-6 py-4">
-          <v-text-field v-model="nameInput" label="Nombre para mostrar" variant="outlined" density="comfortable" prepend-inner-icon="mdi-account" />
-          <div class="mt-2">
-            <v-btn color="primary" :loading="loadingName" @click="saveName" prepend-icon="mdi-content-save">Guardar</v-btn>
-          </div>
-        </v-card-text>
-      </v-card>
+        <!-- Configuración de Usuario Unificada -->
+        <v-card class="rounded-xl border-0 shadow-md">
+          <v-card-title class="px-6 py-4">
+            <div class="flex items-center space-x-2">
+              <v-icon color="primary">mdi-account-cog</v-icon>
+              <span>Configuración de Usuario</span>
+            </div>
+          </v-card-title>
+          <v-card-text class="px-6 py-4">
+            <UserProfileManager />
+          </v-card-text>
+        </v-card>
+      </div>
+    </div>
 
-      <!-- Correo -->
+    <!-- Seguridad de la Cuenta -->
+    <div class="mb-8">
+      <h2 class="text-xl font-semibold text-gray-900 mb-4">Seguridad de la Cuenta</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Correo -->
       <v-card class="rounded-xl border-0 shadow-md">
         <v-card-title class="px-6 py-4">Correo electrónico</v-card-title>
         <v-card-text class="px-6 py-4">
@@ -295,6 +291,7 @@ async function handleDeleteAccount(password) {
           </div>
         </v-card-text>
       </v-card>
+      </div>
     </div>
 
     <!-- Opciones de cuenta -->

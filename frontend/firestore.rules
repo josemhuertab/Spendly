@@ -2,7 +2,23 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Usuario: documento principal
+    // Colección de mapeo username -> uid
+    match /usernames/{username} {
+      // Solo lectura pública para verificar disponibilidad
+      allow read: if request.auth != null;
+      // Solo el dueño puede crear/actualizar su username
+      allow create: if request.auth != null && 
+        request.auth.uid == request.resource.data.uid &&
+        validateUsernameData(request.resource.data);
+      allow update: if request.auth != null && 
+        request.auth.uid == resource.data.uid &&
+        request.auth.uid == request.resource.data.uid &&
+        validateUsernameData(request.resource.data);
+      allow delete: if request.auth != null && 
+        request.auth.uid == resource.data.uid;
+    }
+
+    // Usuario: documento principal (mantiene UID como ID)
     match /users/{userId} {
       allow read, write: if request.auth != null && request.auth.uid == userId;
     }
@@ -130,9 +146,24 @@ service cloud.firestore {
         data.userId is string &&
         data.year is number && data.year >= 2020 && data.year <= 2030 &&
         data.amount is number && data.amount >= 0 &&
-        data.createdAt is timestamp && (data.updatedAt == null || data.updatedAt is timestamp);
+        data.createdAt is timestamp && 
+        (data.updatedAt == null || data.updatedAt is timestamp);
     }
 
+    // Validación de datos de username
+    function validateUsernameData(data) {
+      return data.keys().hasAll(['uid', 'username']) &&
+        data.uid is string &&
+        data.username is string &&
+        data.username.size() >= 3 &&
+        data.username.size() <= 20 &&
+        data.username.matches('^[a-zA-Z0-9_]+$') &&
+        data.createdAt is timestamp;
+    }
 
+    // Función helper para obtener UID desde username
+    function getUserIdFromUsername(username) {
+      return get(/databases/$(database)/documents/usernames/$(username)).data.uid;
+    }
   }
 }

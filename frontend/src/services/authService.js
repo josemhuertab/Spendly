@@ -15,11 +15,24 @@ import {
   deleteUser,
 } from 'firebase/auth'
 import { ref as storageRef, uploadBytesResumable, getDownloadURL } from 'firebase/storage'
+import { UsernameService } from './usernameService'
 
-export async function registerUser(email, password, name) {
+export async function registerUser(email, password, name, username = null) {
   try {
     const cred = await createUserWithEmailAndPassword(auth, email, password)
     await updateProfile(cred.user, { displayName: name })
+    
+    // Si se proporciona un username, registrarlo
+    if (username) {
+      try {
+        await UsernameService.registerUsername(cred.user.uid, username)
+      } catch (usernameError) {
+        // Si falla el registro del username, eliminar la cuenta creada
+        await deleteUser(cred.user)
+        throw new Error(`Error al registrar username: ${usernameError.message}`)
+      }
+    }
+    
     return cred.user
   } catch (error) {
     const errorMessages = {
@@ -31,7 +44,7 @@ export async function registerUser(email, password, name) {
       'auth/too-many-requests': 'Demasiados intentos fallidos. Intenta más tarde'
     }
     
-    const friendlyMessage = errorMessages[error.code] || 'Error al crear la cuenta. Intenta nuevamente'
+    const friendlyMessage = errorMessages[error.code] || error.message || 'Error al crear la cuenta. Intenta nuevamente'
     
     const friendlyError = new Error(friendlyMessage)
     friendlyError.code = error.code
@@ -242,10 +255,25 @@ export async function sendVerification() {
 export async function deleteAccount(currentPassword) {
   try {
     if (!auth.currentUser) throw new Error('Usuario no autenticado')
+    
+    const uid = auth.currentUser.uid
+    
     if (currentPassword) {
       const credential = EmailAuthProvider.credential(auth.currentUser.email, currentPassword)
       await reauthenticateWithCredential(auth.currentUser, credential)
     }
+    
+    // Obtener y eliminar el username antes de eliminar la cuenta
+    try {
+      const username = await UsernameService.getUsernameFromUid(uid)
+      if (username) {
+        await UsernameService.deleteUsername(username)
+      }
+    } catch (usernameError) {
+      console.warn('Error al eliminar username:', usernameError)
+      // Continuar con la eliminación de la cuenta aunque falle el username
+    }
+    
     await deleteUser(auth.currentUser)
     return { success: true }
   } catch (error) {
@@ -257,4 +285,28 @@ export async function deleteAccount(currentPassword) {
     friendlyError.code = error.code
     throw friendlyError
   }
+}
+
+// Funciones específicas para manejo de usernames
+export async function checkUsernameAvailability(username) {
+  return await UsernameService.isUsernameAvailable(username)
+}
+
+export async function registerUserUsername(username) {
+  if (!auth.currentUser) throw new Error('Usuario no autenticado')
+  return await UsernameService.registerUsername(auth.currentUser.uid, username)
+}
+
+export async function updateUserUsername(oldUsername, newUsername) {
+  if (!auth.currentUser) throw new Error('Usuario no autenticado')
+  return await UsernameService.updateUsername(auth.currentUser.uid, oldUsername, newUsername)
+}
+
+export async function getCurrentUserUsername() {
+  if (!auth.currentUser) return null
+  return await UsernameService.getUsernameFromUid(auth.currentUser.uid)
+}
+
+export async function generateUsernameSuggestions(baseName) {
+  return await UsernameService.generateUsernameSuggestions(baseName)
 }

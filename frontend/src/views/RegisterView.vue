@@ -1,7 +1,9 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import AuthLayout from '../layouts/AuthLayout.vue'
+import UsernameInput from '../components/UsernameInput.vue'
+import FirebaseDebug from '../components/FirebaseDebug.vue'
 import { registerUser } from '../services/authService'
 import { useUserStore } from '../store/userStore'
 import LogoUrl from '../components/icons/Logo.png?url'
@@ -10,11 +12,18 @@ const name = ref('')
 const email = ref('')
 const password = ref('')
 const confirmPassword = ref('')
+const username = ref('')
+const usernameValid = ref(false)
 const loading = ref(false)
 const error = ref('')
 const errorCode = ref('')
 const router = useRouter()
 const userStore = useUserStore()
+
+// Computed para el nombre base para sugerencias de username
+const baseName = computed(() => {
+  return name.value.split(' ')[0] // Usar solo el primer nombre
+})
 
 const passwordStrength = ref(0)
 
@@ -44,6 +53,11 @@ function getStrengthText() {
   return 'Fuerte'
 }
 
+// Manejar cambios de validación del username
+function onUsernameValidationChange(isValid) {
+  usernameValid.value = isValid
+}
+
 async function onSubmit() {
   error.value = ''
   errorCode.value = ''
@@ -53,9 +67,26 @@ async function onSubmit() {
     return
   }
   
+  // Username es requerido
+  if (!username.value || !username.value.trim()) {
+    error.value = 'El nombre de usuario es requerido'
+    return
+  }
+  
+  // Si el username no es válido, mostrar error
+  if (!usernameValid.value) {
+    error.value = 'El nombre de usuario no es válido o no está disponible'
+    return
+  }
+  
   loading.value = true
   try {
-    const user = await registerUser(email.value, password.value, name.value)
+    const user = await registerUser(
+      email.value, 
+      password.value, 
+      name.value, 
+      username.value
+    )
     userStore.setUser(user)
     router.push('/dashboard')
   } catch (e) {
@@ -124,6 +155,15 @@ async function onSubmit() {
             prepend-inner-icon="mdi-email-outline"
             :rules="[v => !!v || 'El correo es requerido', v => /.+@.+\..+/.test(v) || 'Correo inválido']"
           />
+
+          <!-- Campo de username personalizado -->
+          <div class="mb-4">
+            <UsernameInput
+              v-model="username"
+              :base-name="baseName"
+              @validation-change="onUsernameValidationChange"
+            />
+          </div>
           
           <v-text-field 
             v-model="password" 
@@ -201,6 +241,9 @@ async function onSubmit() {
       </div>
     </template>
   </AuthLayout>
+  
+  <!-- Debug component (solo en desarrollo) -->
+  <FirebaseDebug />
 </template>
 
 <style scoped>
