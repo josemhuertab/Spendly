@@ -6,6 +6,7 @@ import { useCurrencyStore } from '../store/currencyStore'
 import TransactionForm from '../components/TransactionForm.vue'
 import TransactionTable from '../components/TransactionTable.vue'
 import MonthlyTransactionSummary from '../components/MonthlyTransactionSummary.vue'
+import { parseLocalDate, isDateInMonth, isDateInYear, formatLocalDateString } from '../utils/dateUtils'
 
 const transactionStore = useTransactionStore()
 const userStore = useUserStore()
@@ -46,19 +47,19 @@ const summary = computed(() => {
     const currentMonth = now.getMonth() + 1
     
     filteredTransactions = transactionStore.transactions.filter(t => {
-      const date = new Date(t.date)
-      return date.getFullYear() === currentYear && (date.getMonth() + 1) === currentMonth
+      return isDateInMonth(t.date, currentYear, currentMonth)
     })
   } else if (summaryPeriod.value === 'currentYear') {
     const currentYear = new Date().getFullYear()
     
     filteredTransactions = transactionStore.transactions.filter(t => {
-      const date = new Date(t.date)
-      return date.getFullYear() === currentYear
+      return isDateInYear(t.date, currentYear)
     })
   } else if (summaryPeriod.value === 'custom') {
     filteredTransactions = transactionStore.transactions.filter(t => {
-      const date = new Date(t.date)
+      const date = parseLocalDate(t.date)
+      if (!date) return false
+      
       const transactionYear = date.getFullYear()
       const transactionMonth = date.getMonth() + 1
       
@@ -113,8 +114,10 @@ const availableYears = computed(() => {
   const years = new Set()
   transactionStore.transactions.forEach(t => {
     if (t.date) {
-      const year = new Date(t.date).getFullYear()
-      years.add(year)
+      const date = parseLocalDate(t.date)
+      if (date) {
+        years.add(date.getFullYear())
+      }
     }
   })
   return Array.from(years).sort((a, b) => b - a)
@@ -256,8 +259,8 @@ function applyDateFilters() {
     const fromMonth = selectedMonth.value || 1
     const toMonth = selectedMonthTo.value || 12
     
-    const startDate = new Date(fromYear, fromMonth - 1, 1).toISOString().split('T')[0]
-    const endDate = new Date(toYear, toMonth, 0).toISOString().split('T')[0]
+    const startDate = formatLocalDateString(new Date(fromYear, fromMonth - 1, 1))
+    const endDate = formatLocalDateString(new Date(toYear, toMonth, 0))
     
     transactionStore.setFilter('dateFrom', startDate)
     transactionStore.setFilter('dateTo', endDate)

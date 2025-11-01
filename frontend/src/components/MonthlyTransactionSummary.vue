@@ -2,6 +2,7 @@
 import { ref, computed } from 'vue'
 import { useTransactionStore } from '../store/transactionStore'
 import { useCurrencyStore } from '../store/currencyStore'
+import { parseLocalDate } from '../utils/dateUtils'
 
 const transactionStore = useTransactionStore()
 const currencyStore = useCurrencyStore()
@@ -16,8 +17,10 @@ const availableYears = computed(() => {
   const years = new Set()
   transactionStore.transactions.forEach(t => {
     if (t.date) {
-      const year = new Date(t.date).getFullYear()
-      years.add(year)
+      const date = parseLocalDate(t.date)
+      if (date) {
+        years.add(date.getFullYear())
+      }
     }
   })
   return Array.from(years).sort((a, b) => b - a)
@@ -48,7 +51,8 @@ const monthlyData = computed(() => {
   // Apply local summary filters
   if (summaryYear.value || summaryMonth.value) {
     baseTransactions = baseTransactions.filter(transaction => {
-      const date = new Date(transaction.date)
+      const date = parseLocalDate(transaction.date)
+      if (!date) return false
       const yearMatch = summaryYear.value ? date.getFullYear() === summaryYear.value : true
       const monthMatch = summaryMonth.value ? (date.getMonth() + 1) === summaryMonth.value : true
       return yearMatch && monthMatch
@@ -56,7 +60,8 @@ const monthlyData = computed(() => {
   }
   
   baseTransactions.forEach(transaction => {
-    const date = new Date(transaction.date)
+    const date = parseLocalDate(transaction.date)
+    if (!date) return
     const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`
     const monthName = date.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' })
     

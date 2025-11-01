@@ -10,6 +10,7 @@ import {
   subscribeUserTransactions
 } from '../services/firestoreService'
 import { useUserStore } from './userStore'
+import { parseLocalDate, compareDateStrings } from '../utils/dateUtils'
 
 export const useTransactionStore = defineStore('transactions', {
   state: () => ({
@@ -66,7 +67,7 @@ export const useTransactionStore = defineStore('transactions', {
         filtered = filtered.filter(t => Number(t.amount) <= state.filters.amountTo)
       }
       
-      return filtered.sort((a, b) => new Date(b.date) - new Date(a.date))
+      return filtered.sort((a, b) => compareDateStrings(b.date, a.date))
     },
     
     gastos: (state) => state.transactions.filter(t => t.type === 'gasto'),

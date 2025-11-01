@@ -4,6 +4,7 @@ import { useTransactionStore } from '@/store/transactionStore'
 import { useCurrencyStore } from '@/store/currencyStore'
 import { useSavingsStore } from '@/store/savingsStore'
 import { useThemeStore } from '@/store/themeStore'
+import { parseLocalDate } from '../utils/dateUtils'
 import { Line, Bar, Doughnut, Scatter } from 'vue-chartjs'
 import { Chart, registerables } from 'chart.js'
 Chart.register(...registerables)
@@ -65,8 +66,8 @@ const expenseScatter = computed(() => {
   const points = []
   transactions.value.forEach(t => {
     if (t.type !== 'gasto') return
-    const d = new Date(t.date)
-    if (!isNaN(d)) points.push({ x: d, y: toDisplay(t.amount, t.currency || currencyStore.currentCurrency) })
+    const d = parseLocalDate(t.date)
+    if (d) points.push({ x: d, y: toDisplay(t.amount, t.currency || currencyStore.currentCurrency) })
   })
   return points
 })
@@ -309,7 +310,7 @@ onUnmounted(() => {
           <div v-for="tx in transactionStore.transactions.filter(t => t.paymentMethod==='tarjeta_credito' && t.type==='gasto').slice(0,5)" :key="tx.id" class="flex justify-between items-center py-2 border-b theme-border-light">
             <div>
               <div class="text-sm font-medium theme-text-primary">{{ tx.description || tx.category }}</div>
-              <div class="text-xs theme-text-muted">{{ new Date(tx.date).toLocaleDateString('es-ES') }}</div>
+              <div class="text-xs theme-text-muted">{{ parseLocalDate(tx.date)?.toLocaleDateString('es-ES') || tx.date }}</div>
             </div>
             <div class="text-sm font-semibold text-red-600">
               {{ currencyStore.formatAmount(currencyStore.convertAmount(tx.amount, tx.currency || currencyStore.currentCurrency, currencyStore.currentCurrency)) }}
